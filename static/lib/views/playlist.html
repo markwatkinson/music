@@ -7,7 +7,12 @@
 <table data-bind="with: $root.playlist">
 
     <thead>
-        <th>#</th> <th>Title</th> <th>Artist</th> <th>Album</th> <th>Year</th> <th>Length</th>
+        <th data-bind="click: sortBy.bind($data, 'trackNo')">#</th> 
+        <th data-bind="click: sortBy.bind($data, 'title')">Title</th>
+        <th data-bind="click: sortBy.bind($data, 'artist')">Artist</th> 
+        <th data-bind="click: sortBy.bind($data, 'album')">Album</th> 
+        <th data-bind="click: sortBy.bind($data, 'year')">Year</th> 
+        <th data-bind="click: sortBy.bind($data, 'length')">Length</th>
     </thead>
     <tbody data-bind="foreach: songs">
         <tr data-bind="css: {current : $index() == $root.playlist.index()}, event: {dblclick: function() {$root.playlist.playIndex( $index())}}">
