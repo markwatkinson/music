@@ -77,6 +77,7 @@ ArtistModel.prototype.loadChildren = function(complete) {
                 self.addAlbum(albumData);
             }
         });
+        self.albums.sort(function(a, b) { return a.title().localeCompare(b.title()) });
         if (self.albums().length == 0) {
             if (complete) complete(self.albums());
         } else {
