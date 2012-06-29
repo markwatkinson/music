@@ -71,9 +71,11 @@ def art(artist, album, song=None):
         abort(404)
     print 'artpath' + artpath
     
+    size = int(request.args.get('s', 64))
+    
     
     tmpdir = appDir('tmp/art/')
-    tmpref = hashlib.md5(a[0].url + '/' + a[0].albums[0].url).hexdigest()
+    tmpref = hashlib.md5(a[0].url + '/' + a[0].albums[0].url).hexdigest() + '_' + str(size)
     tmpref += '.jpg'
     
     if not os.path.exists(tmpdir + tmpref):
@@ -84,11 +86,12 @@ def art(artist, album, song=None):
         try:
             import Image
             im = Image.open(artpath)
-            im.thumbnail((64, 64), Image.ANTIALIAS)
+            sizetuple = size, size
+            im.thumbnail(sizetuple, Image.ANTIALIAS)
             im.save(tmpdir + tmpref, 'JPEG')
         except Exception as e:
-            raise
             abort(500)
+
     return send_file(tmpdir + tmpref)
     
     
