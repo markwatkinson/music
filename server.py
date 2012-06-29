@@ -8,7 +8,8 @@ from music import jsonencoder
 
 app = Flask(__name__)
 
-
+# pretty prints artists/albums/songs
+# debugging only
 def pretty_artists(artists):
     s = '<pre>'
     for artist in artists:
@@ -21,8 +22,9 @@ def pretty_artists(artists):
     s += '</pre>'
     return s
     
-    
-def appDir(d=''):
+
+def appdir(d=''):
+    """ Return the directory of a subdir in the project"""
     p = os.path.dirname(os.path.realpath(__file__))
     if d and not p.endswith('/') and not d.startswith('/'): p += '/'
     p += d
@@ -37,13 +39,14 @@ def hello_world():
 @app.route('/get/<artist>/<album>/')
 @app.route('/get/<artist>/<album>/<song>/')
 def get(artist=None, album=None, song=None):
+    """ Get JSON information about the given artist/album/song """
     c = collection.SQLCollection()
     a = c.get(artist, album, song)
     return jsonencoder.encode_artists(a)
-    return pretty_artists(a)
     
 @app.route('/play/<artist>/<album>/<song>/')
 def play(artist, album, song):
+    """ Send the specified song """
     c = collection.SQLCollection()
     a = c.get(artist, album, song)
     try:
@@ -60,6 +63,7 @@ def play(artist, album, song):
 @app.route('/art/<artist>/<album>/')
 @app.route('/art/<artist>/<album>/<song>')
 def art(artist, album, song=None):
+    """ Send the artwork for the given album """
     import hashlib
     
     c = collection.SQLCollection()
@@ -69,34 +73,35 @@ def art(artist, album, song=None):
         artpath = a[0].albums[0].artworkurl
     except:
         abort(404)
-    print 'artpath' + artpath
-    
+
     size = int(request.args.get('s', 64))
     
     
-    tmpdir = appDir('tmp/art/')
+    tmpdir = appdir('tmp/art/')
     tmpref = hashlib.md5(a[0].url + '/' + a[0].albums[0].url).hexdigest() + '_' + str(size)
     tmpref += '.jpg'
-    
-    if not os.path.exists(tmpdir + tmpref):
-        if not artpath: 
-            abort(404)
-        if not os.path.exists(tmpdir):
-            os.mkdir(tmpdir)
-        try:
-            import Image
-            im = Image.open(artpath)
-            sizetuple = size, size
-            im.thumbnail(sizetuple, Image.ANTIALIAS)
-            im.save(tmpdir + tmpref, 'JPEG')
-        except Exception as e:
-            abort(500)
+    if not os.path.exists(tmpdir):
+        os.mkdir(tmpdir)
+        
+    if os.path.exists(tmpdir + tmpref): 
+        return send_file(tmpdir + tmpref)
+        
+    if not artpath:
+        tmpref = 'unknown_' + str(size) + '.jpg'
+        artpath = appdir('/static/assets/unknowncover.jpg')
+    import Image
 
+    im = Image.open(artpath)
+    sizetuple = size, size
+    im.thumbnail(sizetuple, Image.ANTIALIAS)
+    im.save(tmpdir + tmpref, 'JPEG', quality=100)
     return send_file(tmpdir + tmpref)
+
     
     
 @app.route('/rescan')
 def rescan():
+    """ Fully rescans the collection """
     c = collection.FSCollection('/mnt/storage/music/')
     c.build_collection()
     c2 = collection.SQLCollection()
