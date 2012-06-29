@@ -14,20 +14,22 @@ class ArtistJSONEncoder(json.JSONEncoder):
                         'title' : s.title,
                         'trackNo' : s.trackno,
                         'length' : s.length,
-                        'filePath' : s.filepath
+                        'url' : s.url
                     }
                     songs.append(song)
-                
+
                 album = {
                     'title' : a.title,
                     'year' : a.year,
                     'artworkUrl' : a.artworkurl,
-                    'songs' : songs
+                    'songs' : songs,
+                    'url' : a.url
                 }
                 albums.append(album)
             return {
                 'name' : obj.name,
-                'albums' : albums
+                'albums' : albums,
+                'url' : obj.url
             }
         else: 
             return json.JSONEncoder.default(self, obj)
