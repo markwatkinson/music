@@ -14,8 +14,6 @@ window.CollectionViewModel = function() {
     }.bind(this);
     
     
-    
-    
     this.click = function(item) {
         var clickData = item.collectionData.clickData,
             time = +new Date(),
