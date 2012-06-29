@@ -1,4 +1,7 @@
+import re
 import os
+
+
 import tagpy
 
 import album, artist, song
@@ -7,7 +10,7 @@ import album, artist, song
 # Pretty much all of this needs rewriting if it ever needs expanding.
 # it's not good.
 
-import re
+
 def url(identifier):
     s = re.sub('[^a-zA-Z_0-9]+', '-', identifier)
     s = re.sub('--+', '-', s)
@@ -102,6 +105,10 @@ class FSCollection(Collection):
             artist_obj.url = url(artist_obj.name)
             album_obj = album.Album(title=album_, year=year_, songs=[])
             album_obj.url = url(album_obj.title)
+            
+            if tag['art']:
+                album_obj.artworkurl = tag['art']
+
             song_obj = song.Song(title=title_, trackno=trackno_, length=tag['length'], filepath=path)
             song_obj.url = url(song_obj.title)
             
@@ -119,7 +126,9 @@ class FSCollection(Collection):
         
     def __scan(self, directory):
         for f in os.listdir(directory):
-            fullpath = directory + '/' + f
+            fullpath = directory
+            if not fullpath.endswith('/'): fullpath += '/'
+            fullpath += f
             if f.startswith('.'): 
                 continue
             elif os.path.isdir(fullpath):
@@ -133,19 +142,40 @@ class FSCollection(Collection):
             
             
     def build_songs(self):
+        def _cmp(a, b):
+                c = os.path.getsize(a) - os.path.getsize(b)
+                if c < 0: return -1
+                if c > 0: return 1
+                return 0
+
+        artcache = {}
+
         for s in self.files:
             fref = tagpy.FileRef(s)
             tag = fref.tag()
+            directory = os.path.dirname(s)
+            
+            art = artcache.get(directory, False)
+            if art is False:
+                images = []
+                for f in os.listdir(directory):
+                    for ext in ['jpg', 'jpeg', 'png']:
+                        if f.endswith('.' + ext): images.append(directory + '/' + f)
+                images.sort(_cmp)
+                if images: art = images[0]
+                else: art = None
+                artcache[directory] = art
+
             data = {
                 'artist': tag.artist,
                 'album' : tag.album,
                 'year' : tag.year,
                 'title' : tag.title,
                 'trackno': tag.track,
-                'length' : fref.audioProperties().length
+                'length' : fref.audioProperties().length,
+                'art' : art
             }
             self.songs.append((s,  data))
-            
 
 import MySQLdb
 class SQLCollection(Collection):
@@ -154,6 +184,17 @@ class SQLCollection(Collection):
     def __connect(self):
         return MySQLdb.connect(user='root', passwd='', db='music', 
             unix_socket="/opt/lampp/var/mysql/mysql.sock", use_unicode=True)
+            
+    def empty(self):
+        query = '''
+            DELETE FROM songs;
+            DELETE FROM albums;
+            DELETE FROM artists;
+        '''
+        c = self.__connect()
+        c.cursor().execute(query)
+        c.commit()
+        c.close()
     
     def get(self, artist_=None, album_=None, song_=None):
         query = 'SELECT * FROM artists '
@@ -216,8 +257,8 @@ class SQLCollection(Collection):
                 album_id = album.dbid
                 if album_id is None:
                     cursor.execute('''INSERT INTO albums(album_artist, 
-                        album_title, album_year, album_url) VALUES(%s, %s, %s, %s)''', 
-                            (artist_id, album.title, album.year, album.url))
+                        album_title, album_year, album_url, album_artworkurl) VALUES(%s, %s, %s, %s, %s)''', 
+                            (artist_id, album.title, album.year, album.url, album.artworkurl))
                     album_id = cursor.lastrowid
                     album.dbid = album_id
                 else:

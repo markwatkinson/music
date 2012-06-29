@@ -50,12 +50,13 @@ def play(artist, album, song):
     
 @app.route('/rescan')
 def rescan():
-    pass
     c = collection.FSCollection('/mnt/storage/music/')
     c.build_collection()
     c2 = collection.SQLCollection()
     c2.artists = c.artists
+    c2.empty()
     c2.write()
+    return 'ok'
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
