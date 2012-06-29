@@ -1,0 +1,26 @@
+<ul data-bind="foreach: $root.collection.artists">
+    <li data-bind="css: {collapsed: !collectionData.expanded()}">
+        <div class='title artist-name' data-bind="event : {click:$root.collection.click}">
+            <span class='expander'> </span>
+            <span data-bind="text: name"></span>
+        </div>
+        <ul data-bind="foreach: albums">
+            <li data-bind="css: {collapsed: !collectionData.expanded()}"> 
+                <div class="title album-title" data-bind="event : {click:$root.collection.click}">
+                    <span class='expander'> </span>
+                    <span data-bind="text: title"> </span>
+                    <span class="text: year"></span>
+                </div>
+                <ul data-bind="foreach: songs">
+                    <li data-bind="css: {collapsed: !collectionData.expanded()}, click: $root.collection.click"> 
+                        <span data-bind="text: trackNo"></span> 
+                        - 
+                        <span data-bind="text: title"></span> 
+                        -  
+                        <span data-bind="text: prettyLength"></span>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>

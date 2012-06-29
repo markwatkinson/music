@@ -1,0 +1,24 @@
+<a href='#' data-bind="click: $root.playlist.play">Play</a>
+<a href='#' data-bind="click: $root.playlist.stop">Stop</a>
+<a href='#' data-bind="click: $root.playlist.next">Next</a>
+<input type="range" step="any" id="seekbar" min=0 data-bind="attr: {max: $root.playlist.currentSongLength()}"></input>
+
+
+<table data-bind="with: $root.playlist">
+
+    <thead>
+        <th>#</th> <th>Title</th> <th>Artist</th> <th>Album</th> <th>Year</th> <th>Length</th>
+    </thead>
+    <tbody data-bind="foreach: songs">
+        <tr data-bind="css: {current : $index() == $root.playlist.index()}, event: {dblclick: function() {$root.playlist.playIndex( $index())}}">
+            <td data-bind="text: trackNo"></td>
+            <td data-bind="text: title"></td>
+            <td data-bind="text: album.artist.name"></td>
+            <td data-bind="text: album.title"></td>
+            <td data-bind="text: album.year"></td>
+            <td data-bind="text: prettyLength"></td>
+        </tr>
+    </tbody>
+
+</table>
+

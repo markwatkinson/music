@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <meta content="">
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
+    <script type='text/javascript' src='static/ext/knockout-2.1.0.js'></script>
+    
+    <script type='text/javascript' src='static/lib/utils.js'></script>
+    
+    
+    <script type='text/javascript' src='static/lib/models/Model.js'></script>
+    <script type='text/javascript' src='static/lib/models/ArtistModel.js'></script>
+    <script type='text/javascript' src='static/lib/models/AlbumModel.js'></script>
+    <script type='text/javascript' src='static/lib/models/SongModel.js'></script>
+    
+    
+    <script type='text/javascript' src='static/lib/viewmodels/CollectionViewModel.js'></script>
+    <script type='text/javascript' src='static/lib/viewmodels/PlaylistViewModel.js'></script>
+    <script type='text/javascript' src='static/lib/viewmodels/ScreenViewModel.js'></script>
+
+
+    <style>
+        .collection {
+            width: 15%;
+            float: left;
+            height: 100%;
+            overflow: auto;
+        }
+        .playlist {
+            float: left;
+            width: 80%;
+            height: 100%;
+            overflow: auto;
+        }
+        
+        .app-container { 
+        }
+        .app-container::after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+        
+        .playlist .current {
+            font-weight: bold;
+        }
+        .collection .collapsed ul {
+            display: none;
+        }
+
+    </style>
+  </head>
+  <body>
+  
+    <div class='app-container' data-bind="style: {height: $root.screen.appHeight() + 'px'}">
+        <div class='collection' data-bind='template: {name: "collection"}'></div>
+        <div class='playlist' data-bind='template: {name: "playlist"}'></div>
+    </div>
+    
+    <div class='audio'>
+        <audio preload="auto" class='current' id='current-audio' data-bind="attr: {src: $root.playlist.currentSrc}"></audio>
+    </div>
+
+  </body>
+</html>
