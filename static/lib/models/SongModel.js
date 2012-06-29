@@ -7,7 +7,9 @@ window.SongModel = function(data) {
     this.album = new AlbumModel();
     this.length = ko.observable(0);
     
-    this.attrs(['title', 'trackNo', 'album', 'length']);
+    this.url = '';
+    
+    this.attrs(['title', 'trackNo', 'album', 'length', 'url']);
     this.attrTypes({album: AlbumModel});
     this.set(data);
     
@@ -24,14 +26,13 @@ window.SongModel = function(data) {
         ret = m + ':' + s;
         return ret;
     });
-    
-    this.path = function() {
-        return music.utils.formatPath(this.album.artist.name()) + '/' + 
-            music.utils.formatPath(this.album.title()) + '/' + 
-            music.utils.formatPath(this.title());
-    }.bind(this);
+
 }
 
 
 SongModel.prototype = new Model();
 SongModel.prototype.constructor = SongModel;
+
+SongModel.prototype.path = function() {
+    return this.album.path() + '/' + this.url;
+}

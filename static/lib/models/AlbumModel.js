@@ -7,9 +7,11 @@ window.AlbumModel = function(data) {
     this.year = ko.observable('');
     this.songs = ko.observableArray([]);
     
+    this.url = '';
+    
     this.songsLoaded = false;
     
-    this.attrs(['title', 'artist', 'year', 'songs']);
+    this.attrs(['title', 'artist', 'year', 'songs', 'url']);
     this.attrTypes({artist: ArtistModel});
     this.setOverride({
         songs: function(songs) {
@@ -48,8 +50,7 @@ AlbumModel.prototype.addSongs = function(songs) {
 
 AlbumModel.prototype.loadChildren = function(complete) {
     var self = this,
-    path = music.paths.data + music.utils.formatPath(this.artist.name())
-        + '/' + music.utils.formatPath(this.title());
+    path = music.paths.data + this.path();
     
     if (this.songsLoaded) {
         complete();
@@ -82,4 +83,9 @@ AlbumModel.prototype.loadChildren = function(complete) {
         });
         if (complete) complete(self.songs());
     });
+}
+
+
+AlbumModel.prototype.path = function() {
+    return this.artist.path() + '/' + this.url;
 }

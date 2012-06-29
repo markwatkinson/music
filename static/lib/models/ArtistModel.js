@@ -6,8 +6,9 @@ window.ArtistModel = function(data) {
     
     this.albumsLoaded = false;
     
+    this.url = '';
     
-    this.attrs(['name', 'albums']);
+    this.attrs(['name', 'albums', 'url']);
     this.setOverride({
         albums: function(albums) {
             var self = this;
@@ -50,7 +51,7 @@ ArtistModel.prototype.addAlbum = function(data) {
 
 ArtistModel.prototype.loadChildren = function(complete) {
     var self = this,
-        path = music.paths.data + music.utils.formatPath(this.name());
+        path = music.paths.data + this.path();
     
     if (self.albumsLoaded) { 
         if (complete) complete();
@@ -93,3 +94,6 @@ ArtistModel.prototype.loadChildren = function(complete) {
 }
 
 
+ArtistModel.prototype.path = function() {
+    return this.url;
+}

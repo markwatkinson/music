@@ -85,3 +85,7 @@ Model.prototype.load = function(params) {
 Model.prototype.loadChildren = function(complete) { 
     if (complete) complete();
 }
+
+Model.prototype.path = function() {
+    return '';
+}
