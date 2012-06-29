@@ -223,6 +223,7 @@ class SQLCollection(Collection):
             if artist_:
                 album_obj = album.Album(title=d['album_title'], year=d['album_year'], songs=[])
                 album_obj.url = d['album_url']
+                album_obj.artworkurl = d['album_artworkurl']
                 if album_:
                     song_obj = song.Song(title=d['song_title'], trackno=d['song_trackno'], length=d['song_length'], filepath=d['song_filepath'])
                     song_obj.url = d['song_url']
