@@ -5,10 +5,11 @@
             <span data-bind="text: name"></span>
         </div>
         <ul data-bind="foreach: albums">
-            <li data-bind="css: {collapsed: !collectionData.expanded()}"> 
-                <div class="title album-title" data-bind="event : {click:$root.collection.click}">
+            <li data-bind="css: {collapsed: !collectionData.expanded()}">
+                <div class="title album-title" 
+                    data-bind="event : {click:$root.collection.click},
+                        style: {backgroundImage: 'url(/art/' + $data.path() + '?s=48)'}">
                     <span class='expander'> </span>
-                    <img data-bind="attr: {src: '/art/' + $data.path() + '?s=48'}" width=48 height=48>
                     <span data-bind="text: title"> </span>
                     <span class="text: year"></span>
                 </div>

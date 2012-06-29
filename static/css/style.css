@@ -1,0 +1,72 @@
+html {
+    font-family: sans-serif;
+}
+
+.collection {
+    width: 19%;
+    float: left;
+    height: 100%;
+    overflow: auto;
+    font-size: smaller;
+}
+.playlist {
+    float: left;
+    width: 80%;
+    height: 100%;
+    overflow: auto;
+}
+
+.collection ul {
+    list-style: none;
+    padding: 0;
+}
+
+/* album box */
+.collection ul ul {
+    
+    padding-left: 10px;
+}
+.collection ul ul li {
+    margin-bottom: 2px;
+    white-space: nowrap;
+}
+.collection ul ul li:last-child {
+    margin-bottom: 0;
+}
+
+/* tracklist box */
+.collection ul ul ul {
+    padding-left: 24px;
+}
+
+.collection .album-title {
+    /* this holds the album art as a bg image */
+    background-repeat: no-repeat;
+    background-position: left center;
+    min-height: 48px;
+    padding-left: 55px;
+}
+.collection .album-title span {
+    line-height: 48px;
+    vertical-align: middle;
+}
+
+
+
+
+
+
+.app-container { 
+}
+.app-container::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.playlist .current {
+    font-weight: bold;
+}
+.collection .collapsed ul {
+    display: none;
+}
