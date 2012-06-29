@@ -13,11 +13,7 @@
                 </div>
                 <ul data-bind="foreach: songs">
                     <li data-bind="css: {collapsed: !collectionData.expanded()}, click: $root.collection.click"> 
-                        <span data-bind="text: trackNo"></span> 
-                        - 
-                        <span data-bind="text: title"></span> 
-                        -  
-                        <span data-bind="text: prettyLength"></span>
+                        <span data-bind="text: title"></span>
                     </li>
                 </ul>
             </li>
