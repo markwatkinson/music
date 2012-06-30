@@ -79,7 +79,7 @@ class FSCollection(Collection):
         self.directories = [directories] if isinstance(directories, str) else directories
         self.files = []
         self.songs = []
-        self.extensions = ['ogg', 'mp3', 'flac', 'wav']
+        self.extensions = ['ogg']#, 'mp3', 'flac', 'wav']
         super(FSCollection, self).__init__()
 
         
