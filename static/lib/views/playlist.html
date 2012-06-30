@@ -1,9 +1,14 @@
-<a href='#' data-bind="click: $root.playlist.play">Play</a>
-<a href='#' data-bind="click: $root.playlist.stop">Stop</a>
-<a href='#' data-bind="click: $root.playlist.next">Next</a>
-<input type="range" step="any" id="seekbar" min=0 data-bind="attr: {max: $root.playlist.currentSongLength()},
-    value: $root.playlist.seek"></input>
+<div class='playback-controls'>
+    <a href='#' data-bind="click: $root.playlist.play">Play</a>
+    <a href='#' data-bind="click: $root.playlist.stop">Stop</a>
+    <a href='#' data-bind="click: $root.playlist.next">Next</a>
+    <input type="range" step="any" id="seekbar" min=0 data-bind="attr: {max: $root.playlist.currentSongLength()},
+        value: $root.playlist.seek"></input>
+</div>
 
+<div class='playlist-controls'>
+    <a href='#' data-bind="click: $root.playlist.selection.remove">Delete selected</a>
+</div>
 
 <table data-bind="with: $root.playlist">
 
@@ -16,7 +21,16 @@
         <th data-bind="click: sortBy.bind($data, 'length')">Length</th>
     </thead>
     <tbody data-bind="foreach: songs">
-        <tr data-bind="css: {current : $index() == $root.playlist.index()}, event: {dblclick: function() {$root.playlist.playIndex( $index())}}">
+        <tr
+            data-bind="css: {
+                current : $index() == $root.playlist.index(),
+                selected: playlistData.selected()
+            }, 
+            event: {
+                click: function(data, event) { $root.playlist.selection.click(event, $index()) },
+                dblclick: function(){$root.playlist.playIndex( $index() )},
+                keypress: function(){ $root.playlist.selection.keyPress(event) }
+            }">
             <td data-bind="text: trackNo"></td>
             <td data-bind="text: title"></td>
             <td data-bind="text: album.artist.name"></td>

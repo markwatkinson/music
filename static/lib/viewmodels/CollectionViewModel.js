@@ -1,8 +1,9 @@
 "use strict";
 window.CollectionViewModel = function() {
-    var self = this,
-        clickTimer,
-        lastClickTarget;
+    var self = this;
+    
+    
+
 
     this.search = {
         term: '',
@@ -10,7 +11,7 @@ window.CollectionViewModel = function() {
         timer: null,
         active: false
     };
-        
+
     // NOTE never reassign these arrays, make sure you operate on them directly.
     this.searchResults = [];
     this.collection = [];
@@ -82,30 +83,26 @@ window.CollectionViewModel = function() {
     }.bind(this);
     
     
+    
     this.click = function(item) {
-        var clickData = item.collectionData.clickData,
-            time = +new Date(),
-            threshold = 150,
-            doubleClick = time - clickData.lastClick < threshold;
-        if (doubleClick) {
-            clickData.lastClick = 0;
-            clearTimeout(clickData.timer);
-            if (self.search.active) {
-                music.root.playlist.addToPlaylist(item);
-            } else {
-                item.loadChildren(function() {
-                    music.root.playlist.addToPlaylist(item);
-                });
-            }
-        }
-        else {
-            clickData.timer = setTimeout(function() {
-                self.toggleExpand(item);
-                clickData.lastClick = 0;
-            }, threshold);
-            clickData.lastClick = time;
-        }
+        this.clickData
     }
+    
+    // single and double click events for expanding the tree and 
+    // adding to playlist
+    music.utils.addClickHandler(this, function() {
+        var item = this;
+        self.toggleExpand(item);
+    }, function() {
+        var item = this;
+        if (self.search.active) {
+            music.root.addToPlaylist(item);
+        } else {
+            item.loadChildren(function() {
+                music.root.playlist.addToPlaylist(item);
+            })
+        }
+    });
 
     this.load = function(callback) {
         var path = music.paths.data, artist;

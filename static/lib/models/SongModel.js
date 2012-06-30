@@ -29,10 +29,23 @@ window.SongModel = function(data) {
 
 }
 
-
 SongModel.prototype = new Model();
 SongModel.prototype.constructor = SongModel;
 
 SongModel.prototype.path = function() {
     return this.album.path() + '/' + this.url;
+}
+
+
+SongModel.prototype.clone = function() {
+    // this is currently just used by the playlist and doesn't need to be 
+    // deep
+    var s = new SongModel({
+        title: this.title(),
+        trackNo : this.trackNo(),
+        length: this.length(),
+        url: this.url
+    });
+    s.album = this.album;
+    return s;
 }

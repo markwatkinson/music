@@ -52,7 +52,6 @@ window.PlaylistViewModel = function() {
                 }
                 return c;
             }
-            
         },
         ignoreIndex = false,
         sortBy = null,
@@ -132,11 +131,16 @@ window.PlaylistViewModel = function() {
     }.bind(this);
     
     this.addToPlaylist = function(obj, autoPlay) {
-        var index = 0;
+        var index = 0, s;
         sortBy = null;
         if (typeof autoPlay === 'undefined') autoPlay = true;
         if (obj instanceof SongModel) {
-            self.songs.push(obj);
+            s = obj.clone();
+            // this probably shouldn't be here
+            s.playlistData = {
+                selected: ko.observable(false)
+            };
+            self.songs.push(s);
             index = self.songs().length;
         } else if (obj instanceof AlbumModel) {
             music.utils.each(obj.songs(), function(i, e) {
@@ -158,6 +162,7 @@ window.PlaylistViewModel = function() {
         
     }
     
+    
     this.play = function() {
         if (this.index() < 0 && !this.playing()) {
             this.next();
@@ -166,6 +171,7 @@ window.PlaylistViewModel = function() {
         audioElement.play();
         clearInterval(seekPoller);
         seekPoller = setInterval(function() {
+            var currentSong = self.currentSong();
             self.seekPos(audioElement.currentTime);
             
             
@@ -177,7 +183,8 @@ window.PlaylistViewModel = function() {
             // starts handling things differently, we have to look at the 
             // song's metadata and hope it was correct
             // This is risky because song metadata can be wrong.
-            if (audioElement.ended || self.seekPos() >= self.currentSong().length()) {
+            if (audioElement.ended || !currentSong || 
+                    self.seekPos() >= self.currentSong().length()) {
                 self.next();
             }
         }, 500)
@@ -208,7 +215,104 @@ window.PlaylistViewModel = function() {
         },
         owner: this
     });
+    
+    
+    
+    this.selection = {
+        
+        lastIndex : -1,
+        lastCtrl : false,
+        lastShift: false,
+        
+        
+        clear: function() {
+            music.utils.each(self.songs(), function(i, s) {
+                s.playlistData.selected(false);
+            });
+        },
+        setIndex: function(index, value) {
+            var s = self.songs()[index];
+            if (!s) return;
+            s.playlistData.selected(value);
+            self.selection.lastIndex = index;
+        },
+        toggleIndex: function(index) {
+            var s = self.songs()[index];
+            if (!s) return;
+            s.playlistData.selected(!s.playlistData.selected());
+            self.selection.lastIndex = index;
+        },
+        
+        range : function(index1, index2) {
+            var tmp, s;
+            if (index1 > index2) {
+                tmp = index1;
+                index1 = index2;
+                index2 = tmp;
+            }
+            console.log('selecting from', index1, index2);
+            while(index1 <= index2) {
+                s = self.songs()[index1];
+                if (!s) break;
+                s.playlistData.selected(true);
+                index1++;
+            }
+        },
+        
+        // click handler
+        click : function(event, index) {
+            var sel = self.selection;
+            console.log(event);
+            if (event.ctrlKey) {
+                sel.toggleIndex(index);
+                sel.lastCtrl = true;
+                sel.lastShift = false;
+            } else if (event.shiftKey) {
+                if (sel.lastShift) {
+                    sel.clear();
+                }
+                sel.range(sel.lastIndex > -1? sel.lastIndex : 0, index);
+                sel.lastCtrl = false;
+                sel.lastShift = true
+                
+            } else {
+                sel.clear();
+                sel.setIndex(index, true);
+                sel.lastCtrl = false;
+                sel.lastShift = false;
+            }
+        },
+        
+        remove : function() {
+            self.songs.remove(function(s) {
+                return s.playlistData.selected();
+            });
+        },
+        
+        // TODO we can't bind this currently as the tr element won't fire 
+        // the event. We'll have to fix this with some kind of jquery layer
+        // on the top of the app.
+        keyPress: function(event) {
+            var k = event.keyCode;
+            console.log('keypress', k);
+            switch(k) {
+                // delete
+                case 46:
+                    self.songs.remove(function(s) {
+                        return s.playlistData.selected();
+                    });
+                    break;
+            }
+        }
+    };
 
+    
+    this.selectToggleIndex = function(index) {
+        var s = self.songs()[index];
+        if (!s) return;
+        s.playlistData.selected(!s.playlistData.selected());
+    }
+    
     /*
     audioElement.addEventListener('ended', function() {
         console.log('ended playback');

@@ -50,6 +50,36 @@ var music;
                 }
             }
             return index;
+        },
+        
+        
+        // double vs single click convenience stuff
+        // adds a clickData object with a click() property which should be 
+        // called on click events.
+        addClickHandler : function(obj, onSingleClick, onDoubleClick) {
+            var threshold = 150;
+            obj.clickData = {
+                lastClick: 0,
+                timer: null,
+                click: function(event) {
+                    var time = +new Date(),
+                        doubleClick = time - obj.clickData.lastClick < threshold,
+                        self = this;
+                    if (doubleClick) {
+                        console.log('doubleclick');
+                        clearTimeout(obj.clickData.timer);
+                        obj.clickData.lastClick = 0;
+                        onDoubleClick.call(self, event);
+                    } else {
+                        obj.clickData.lastClick = time;
+                        obj.clickData.timer = setTimeout(function() {
+                            console.log('click');
+                            obj.clickData.lastClick = 0;
+                            onSingleClick.call(self, event);
+                        }, threshold);
+                    }
+                }
+            }
         }
     }
     
@@ -100,6 +130,9 @@ var music;
             element.value = valueUnwrapped;
         }
     };
+    
+    
+
     
     loadTemplates(setup);
 })(jQuery);
