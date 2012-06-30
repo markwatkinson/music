@@ -65,6 +65,12 @@ html {
 }
 
 
+.playlist .grid {
+    width: 100%;
+    border-spacing: 0;
+    cursor: default;
+}
+
 .playlist .selected {
     background-color: #BFD9FF;
 }

@@ -10,7 +10,8 @@
     <a href='#' data-bind="click: $root.playlist.selection.remove">Delete selected</a>
 </div>
 
-<table tabindex="1"
+<table class='grid'
+    tabindex="1"
     data-bind="with: $root.playlist,
         event: { 
             click: function(data, event) { event.target.focus(); },
