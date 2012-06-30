@@ -164,9 +164,11 @@ window.PlaylistViewModel = function() {
     
     
     this.play = function() {
+        
         if (this.index() < 0 && !this.playing()) {
             this.next();
         }
+        console.log('play');
         this.playing(true);
         audioElement.play();
         clearInterval(seekPoller);
@@ -197,10 +199,13 @@ window.PlaylistViewModel = function() {
     }
     
     this.stop = function() {
+        var src = this.currentSrc();
         audioElement.pause();
         this.currentSrc('');
+        this.currentSrc(src);
         this.playing(false);
         clearInterval(seekPoller);
+        this.seekPos(0);
     }.bind(this);
     
     this.seek = ko.computed({
