@@ -219,8 +219,7 @@ window.PlaylistViewModel = function() {
     
     
     this.selection = {
-        
-        lastIndex : -1,
+        cursor: -1,
         lastCtrl : false,
         lastShift: false,
         
@@ -234,13 +233,11 @@ window.PlaylistViewModel = function() {
             var s = self.songs()[index];
             if (!s) return;
             s.playlistData.selected(value);
-            self.selection.lastIndex = index;
         },
         toggleIndex: function(index) {
             var s = self.songs()[index];
             if (!s) return;
             s.playlistData.selected(!s.playlistData.selected());
-            self.selection.lastIndex = index;
         },
         
         range : function(index1, index2) {
@@ -250,7 +247,6 @@ window.PlaylistViewModel = function() {
                 index1 = index2;
                 index2 = tmp;
             }
-            console.log('selecting from', index1, index2);
             while(index1 <= index2) {
                 s = self.songs()[index1];
                 if (!s) break;
@@ -267,19 +263,23 @@ window.PlaylistViewModel = function() {
                 sel.toggleIndex(index);
                 sel.lastCtrl = true;
                 sel.lastShift = false;
+                sel.cursor = index;
             } else if (event.shiftKey) {
                 if (sel.lastShift) {
                     sel.clear();
                 }
-                sel.range(sel.lastIndex > -1? sel.lastIndex : 0, index);
+                if (sel.cursor < 0) sel.cursor = 0;
+                sel.range(sel.cursor, index);
                 sel.lastCtrl = false;
                 sel.lastShift = true
+                
                 
             } else {
                 sel.clear();
                 sel.setIndex(index, true);
                 sel.lastCtrl = false;
                 sel.lastShift = false;
+                sel.cursor = index;
             }
         },
         
@@ -288,21 +288,42 @@ window.PlaylistViewModel = function() {
                 return s.playlistData.selected();
             });
         },
-        
-        // TODO we can't bind this currently as the tr element won't fire 
-        // the event. We'll have to fix this with some kind of jquery layer
-        // on the top of the app.
+
+        // FIXME this is hijacking everything, e.g. f5 doesn't work.
         keyPress: function(event) {
-            var k = event.keyCode;
-            console.log('keypress', k);
+            var k = event.keyCode,
+                sel = self.selection,
+                handled = false;
+            
             switch(k) {
                 // delete
                 case 46:
-                    self.songs.remove(function(s) {
-                        return s.playlistData.selected();
-                    });
+                    sel.remove();
+                    handled = true;
+                    break;
+                // up arrow
+                case 38:
+                    sel.clear();
+                    sel.cursor = Math.max(sel.cursor-1, 0);
+                    sel.setIndex(sel.cursor, true);
+                    handled = true;
+                    break
+                // down arrow
+                case 40:
+                    sel.clear();
+                    sel.cursor = Math.min(sel.cursor+1, self.songs().length-1);
+                    sel.setIndex(sel.cursor, true);
+                    handled = true;
+                    break;
+                
+                case 13: // enter
+                case 32: // space
+                    self.playIndex(sel.cursor);
+                    handled = true;
                     break;
             }
+            console.log(k, handled);
+            return handled;
         }
     };
 

@@ -10,7 +10,13 @@
     <a href='#' data-bind="click: $root.playlist.selection.remove">Delete selected</a>
 </div>
 
-<table data-bind="with: $root.playlist">
+<table tabindex="1"
+    data-bind="with: $root.playlist,
+        event: { 
+            click: function(data, event) { event.target.focus(); },
+            keydown: function(data, event){ return $root.playlist.selection.keyPress(event); }
+        }
+    ">
 
     <thead>
         <th data-bind="click: sortBy.bind($data, 'trackNo')">#</th> 
@@ -29,7 +35,7 @@
             event: {
                 click: function(data, event) { $root.playlist.selection.click(event, $index()) },
                 dblclick: function(){$root.playlist.playIndex( $index() )},
-                keypress: function(){ $root.playlist.selection.keyPress(event) }
+                
             }">
             <td data-bind="text: trackNo"></td>
             <td data-bind="text: title"></td>
