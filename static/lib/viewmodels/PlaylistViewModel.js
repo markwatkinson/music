@@ -54,7 +54,8 @@ window.PlaylistViewModel = function() {
             }
             
         },
-        ignoreIndex = false;
+        ignoreIndex = false,
+        sortBy = null;
 
     this.songs = ko.observableArray([]);
     this.random = ko.observable(false);
@@ -63,6 +64,36 @@ window.PlaylistViewModel = function() {
     this.playing = ko.observable(false);
     this.paused = ko.observable(false);
     this.index = ko.observable(-1);
+    
+    this.sortBy = ko.computed({
+        read: function(){ return sortBy; },
+        write: function(field) {
+            var lastField = sortBy,
+                sortCmp = comparators[field], currentSong = this.currentSong();
+            
+            if (sortCmp) {
+                sortBy = field;
+                if (lastField === field) {
+                    self.songs.reverse();
+                } else {
+                    self.songs.sort(sortCmp);
+                }
+            }
+            // now we've just changed the order, so we need to make sure
+            // the index is updated to match the current playing song
+            if (currentSong) {
+                music.utils.each(this.songs(), function(i, e) {
+                    if (e == currentSong) {
+                        ignoreIndex = true;
+                        self.index(i);
+                        ignoreIndex = false
+                        return true;
+                    }
+                });
+            }
+        },
+        owner: this
+    });
     
     // read by the <audio> element
     this.currentSrc = ko.observable('');
@@ -97,7 +128,7 @@ window.PlaylistViewModel = function() {
     
     this.addToPlaylist = function(obj, autoPlay) {
         var index = 0;
-        
+        sortBy = null;
         if (typeof autoPlay === 'undefined') autoPlay = true;
         if (obj instanceof SongModel) {
             self.songs.push(obj);
@@ -142,27 +173,7 @@ window.PlaylistViewModel = function() {
         this.playing(false);
     }.bind(this);
     
-    
-    
-    this.sortBy = function(field) {
-        var sortCmp = comparators[field], currentSong = this.currentSong();
-        if (sortCmp) {
-            self.songs.sort(sortCmp);
-        }
-        // now we've just changed the order, so we need to make sure
-        // the index is updated to match the current playing song
-        if (currentSong) {
-            music.utils.each(this.songs(), function(i, e) {
-                if (e == currentSong) {
-                    ignoreIndex = true;
-                    self.index(i);
-                    ignoreIndex = false
-                    return true;
-                }
-            });
-        }
-    }.bind(this);
-    
+        
     
     audioElement.addEventListener('ended', function() {
         console.log('ended playback');
