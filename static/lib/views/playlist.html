@@ -1,5 +1,11 @@
 <div class='playback-controls'>
-    <a href='#' data-bind="click: $root.playlist.play">Play</a>
+    <a href='#' data-bind="text: ($root.playlist.paused() || !$root.playlist.playing())? 'Play' : 'Pause',
+        click: function() {
+            console.log($root.playlist.playing(), $root.playlist.paused());
+            if (!$root.playlist.playing() || $root.playlist.paused()) $root.playlist.play();
+            else $root.playlist.pause();
+        }
+    "></a>
     <a href='#' data-bind="click: $root.playlist.stop">Stop</a>
     <a href='#' data-bind="click: $root.playlist.next">Next</a>
     <input type="range" step="any" id="seekbar" min=0 data-bind="attr: {max: $root.playlist.currentSongLength()},
