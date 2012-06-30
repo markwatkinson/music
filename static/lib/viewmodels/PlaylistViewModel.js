@@ -167,7 +167,19 @@ window.PlaylistViewModel = function() {
         clearInterval(seekPoller);
         seekPoller = setInterval(function() {
             self.seekPos(audioElement.currentTime);
-            console.log(self.seekPos())
+            
+            
+            // for some reason Chrome isn't firing the ended event, 
+            // audioElement.ended === false always, and audioElement.duration is
+            // infinity. on Firefox, duration increases incrementally
+            // It may be because the flask server is serving media as HTTP 200 
+            // instead of 206 (partial content). In any case, until one party
+            // starts handling things differently, we have to look at the 
+            // song's metadata and hope it was correct
+            // This is risky because song metadata can be wrong.
+            if (audioElement.ended || self.seekPos() >= self.currentSong().length()) {
+                self.next();
+            }
         }, 500)
     }.bind(this);
     
@@ -197,7 +209,7 @@ window.PlaylistViewModel = function() {
         owner: this
     });
 
-
+    /*
     audioElement.addEventListener('ended', function() {
         console.log('ended playback');
         self.next();
@@ -205,7 +217,7 @@ window.PlaylistViewModel = function() {
     audioElement.addEventListener('durationchange', function() {
         
     }, false);
-    
+    */
     
     
 }
