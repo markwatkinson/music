@@ -55,7 +55,12 @@ window.PlaylistViewModel = function() {
             
         },
         ignoreIndex = false,
-        sortBy = null;
+        sortBy = null,
+        
+        seekPoller = null;
+    
+    // dummy variable, referenced by seek() to trigger an update
+    this.seekPos = ko.observable(0);
 
     this.songs = ko.observableArray([]);
     this.random = ko.observable(false);
@@ -159,6 +164,11 @@ window.PlaylistViewModel = function() {
         }
         this.playing(true);
         audioElement.play();
+        clearInterval(seekPoller);
+        seekPoller = setInterval(function() {
+            self.seekPos(audioElement.currentTime);
+            console.log(self.seekPos())
+        }, 500)
     }.bind(this);
     
     this.playIndex = function(index) {
@@ -171,10 +181,23 @@ window.PlaylistViewModel = function() {
         audioElement.pause();
         this.currentSrc('');
         this.playing(false);
+        clearInterval(seekPoller);
     }.bind(this);
     
-        
-    
+    this.seek = ko.computed({
+        read: function() {
+            return this.seekPos();
+        },
+        write: function(value) {
+            value = Math.round(value);
+            this.seekPos(value);
+            audioElement.currentTime = value;
+            console.log('seekng to', value);
+        },
+        owner: this
+    });
+
+
     audioElement.addEventListener('ended', function() {
         console.log('ended playback');
         self.next();
