@@ -1,3 +1,9 @@
+<div class='search-container'>
+    <input type='text' data-bind='emptyValue: $root.collection.searchTerm' class='search'/> 
+    <a href='#' data-bind="click: function() {$root.collection.searchTerm('')}">Clear</a>
+</div>
+
+
 <ul data-bind="foreach: $root.collection.artists">
     <li data-bind="css: {collapsed: !collectionData.expanded()}">
         <div class='title artist-name' data-bind="event : {click:$root.collection.click}">

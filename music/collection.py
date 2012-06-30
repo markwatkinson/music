@@ -185,6 +185,25 @@ class SQLCollection(Collection):
         return MySQLdb.connect(user='root', passwd='', db='music', 
             unix_socket="/opt/lampp/var/mysql/mysql.sock", use_unicode=True)
             
+    def __build_result(self, cursor):
+        for result in cursor.fetchall():
+            d = {}
+            for field, value in zip(cursor.description, result):
+                d[field[0]] = value
+            artist_obj = artist.Artist(name=d['artist_name'], albums=[])
+            artist_obj.url = d['artist_url']
+            if d.get('album_title', None) is not None:
+                album_obj = album.Album(title=d['album_title'], year=d['album_year'], songs=[])
+                album_obj.url = d['album_url']
+                album_obj.artworkurl = d['album_artworkurl']
+                if d.get('song_title', None) is not None:
+                    song_obj = song.Song(title=d['song_title'], trackno=d['song_trackno'], length=d['song_length'], filepath=d['song_filepath'])
+                    song_obj.url = d['song_url']
+                    album_obj.add_song(song_obj)
+                artist_obj.add_album(album_obj)
+            self.merge_artist(artist_obj)
+        return self.artists
+            
     def empty(self):
         query = '''
             DELETE FROM songs;
@@ -213,24 +232,44 @@ class SQLCollection(Collection):
         connection = self.__connect()
         cursor = connection.cursor()
         r = cursor.execute(query, tuple(subs))
+        return self.__build_result(cursor)
+
+    def search(self, term):
+        connection = self.__connect()
+        cursor = connection.cursor()
+        # the percentages mess up the prepared statement so we have to escape 
+        # and insert the old fashioned way
+        esc_term = MySQLdb.escape_string(term)
         
-        for result in cursor.fetchall():
-            d = {}
-            for field, value in zip(cursor.description, result):
-                d[field[0]] = value
-            artist_obj = artist.Artist(name=d['artist_name'], albums=[])
-            artist_obj.url = d['artist_url']
-            if artist_:
-                album_obj = album.Album(title=d['album_title'], year=d['album_year'], songs=[])
-                album_obj.url = d['album_url']
-                album_obj.artworkurl = d['album_artworkurl']
-                if album_:
-                    song_obj = song.Song(title=d['song_title'], trackno=d['song_trackno'], length=d['song_length'], filepath=d['song_filepath'])
-                    song_obj.url = d['song_url']
-                    album_obj.add_song(song_obj)
-                artist_obj.add_album(album_obj)
-            self.merge_artist(artist_obj)
+        
+        # could we compress this into one query?
+        # if the artist matches, we want all their albums and all their songs
+        q1 = '''
+            SELECT * FROM artists
+            INNER JOIN albums ON albums.album_artist = artists.artist_id
+            INNER JOIN songs ON songs.song_album = albums.album_id
+            WHERE artist_name LIKE '%{0}%'
+        '''.format(esc_term)
+        # if the album matches, we want the artist and the songs
+        q2 = '''
+            SELECT * FROM artists
+            INNER JOIN albums ON albums.album_artist = artists.artist_id AND
+                albums.album_title LIKE '%{0}%'
+            INNER JOIN songs ON songs.song_album = albums.album_id
+        '''.format(esc_term)
+        # if just a song matches, we want its album and artist
+        q3 = '''
+            SELECT * FROM artists
+            INNER JOIN albums ON albums.album_artist = artists.artist_id
+            INNER JOIN songs ON songs.song_album = albums.album_id AND
+                songs.song_title LIKE '%{0}%'
+        '''.format(esc_term)
+        for q in [q1, q2, q3]:
+            print q
+            cursor.execute(q)
+            self.__build_result(cursor)
         return self.artists
+        
 
     def write(self):
         # this is really bad

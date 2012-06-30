@@ -59,6 +59,12 @@ def play(artist, album, song):
     except:
         abort(404)
 
+@app.route('/search/<term>/')
+def search(term):
+    """ Search for a particular term """
+    c = collection.SQLCollection()
+    a = c.search(term.strip())
+    return jsonencoder.encode_artists(a)
 
 @app.route('/art/<artist>/<album>/')
 @app.route('/art/<artist>/<album>/<song>')

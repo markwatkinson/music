@@ -86,6 +86,21 @@ var music;
         ko.applyBindings(music.root);
     }
     
+    // For some reason, the default value binding doesn't appear to fire on
+    // empty values. Here's a very simple replacement which probably doesn't
+    // implement everything 'value' does in full.
+    ko.bindingHandlers.emptyValue = {
+        init: function(element, valueAccessor) {
+            $(element).change(function() { valueAccessor()(element.value) });
+        },
+        update: function(element, valueAccessor, allBindingsAccessor) {
+            var value = valueAccessor(), 
+                allBindingsAccessor = allBindingsAccessor(),
+                valueUnwrapped = ko.utils.unwrapObservable(value);
+            element.value = valueUnwrapped;
+        }
+    };
+    
     loadTemplates(setup);
 })(jQuery);
     

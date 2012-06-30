@@ -16,7 +16,7 @@ window.AlbumModel = function(data) {
     this.setOverride({
         songs: function(songs) {
             var self = this;
-            music.utils.each(function(i, e) { self.addSong(e); })
+            music.utils.each(songs, function(i, e) { self.addSong(e); })
         }
     });
     this.set(data);
