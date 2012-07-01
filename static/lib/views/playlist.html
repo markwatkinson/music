@@ -1,13 +1,19 @@
 <div class='playback-controls'>
-    <a href='#' data-bind="text: ($root.playlist.paused() || !$root.playlist.playing())? 'Play' : 'Pause',
+    <!-- need to do something about all this... -->
+    <a href='#' class='control'
+    data-bind="text: ($root.playlist.paused() || !$root.playlist.playing())? 'Play' : 'Pause',
         click: function() {
             console.log($root.playlist.playing(), $root.playlist.paused());
             if (!$root.playlist.playing() || $root.playlist.paused()) $root.playlist.play();
             else $root.playlist.pause();
+        },
+        css : {
+            'play' : !$root.playlist.playing() || $root.playlist.paused(),
+            'pause': $root.playlist.playing() &amp;&amp; !$root.playlist.paused()
         }
     "></a>
-    <a href='#' data-bind="click: $root.playlist.stop">Stop</a>
-    <a href='#' data-bind="click: $root.playlist.next">Next</a>
+    <a href='#' data-bind="click: $root.playlist.stop" class='control stop'>Stop</a>
+    <a href='#' data-bind="click: $root.playlist.next" class='control next'>Next</a>
     <input type="range" step="any" id="seekbar" min=0 data-bind="attr: {max: $root.playlist.currentSongLength()},
         value: $root.playlist.seek"></input>
 </div>

@@ -137,6 +137,26 @@ html {
     -ms-user-select: none;
     user-select: none;
 }
-    
 
+.playback-controls a.control {
+    width: 32px;
+    height: 32px;
+    text-indent:-9999px;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    display: inline-block;
+}
 
+.playback-controls .play {
+    background-image: url(/static/assets/icons/player/play.png);
+}
+.playback-controls .pause {
+    background-image: url(/static/assets/icons/player/pause.png);
+}
+
+.playback-controls .stop {
+    background-image: url(/static/assets/icons/player/stop.png);
+}
+.playback-controls .next {
+    background-image: url(/static/assets/icons/player/next.png);
+}
