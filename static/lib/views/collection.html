@@ -1,56 +1,59 @@
 <div class='search-container'>
-    <input type='text' data-bind='emptyValue: $root.collection.searchTerm' class='search'/> 
+    <input type='text' data-bind='emptyValue: $root.collection.searchTerm' class='search' placeholder='Search collection'/> 
     <a href='#' data-bind="click: function() {$root.collection.searchTerm('')}">Clear</a>
 </div>
 
-
-<ul data-bind="foreach: $root.collection.artists">
-    <li draggable='true'
-        data-bind="css: {
-                collapsed: !collectionData.expanded()
-            },
-            event: {
-                dragstart: function(data, event) { 
-                    $root.collection.drag(event, $data);
-                    return true;
+<div class='tree-container'
+    data-bind="style: {height: $root.screen.treeHeight() + 'px'}"
+    >
+    <ul data-bind="foreach: $root.collection.artists">
+        <li draggable='true'
+            data-bind="css: {
+                    collapsed: !collectionData.expanded()
                 },
-                click: $root.collection.click
-            }
-        ">
-        <div class='title artist-name' data-bind="">
-            <span data-bind="text: name"></span>
-        </div>
-        <ul data-bind="foreach: albums">
-            <li draggable='true'
-                data-bind="css: {collapsed: !collectionData.expanded()},
                 event: {
                     dragstart: function(data, event) { 
                         $root.collection.drag(event, $data);
                         return true;
                     },
                     click: $root.collection.click
-                }">
-                <div class="title album-title" 
-                    data-bind="style: {backgroundImage: 'url(/art/' + $data.path() + '?s=48)'}">
-                    <span class='expander'> </span>
-                    <span data-bind="text: title"> </span>
-                    <span class="text: year"></span>
-                </div>
-                <ul data-bind="foreach: songs">
-                    <li draggable='true'
-                        data-bind="css: {collapsed: !collectionData.expanded()}, 
-                        click: $root.collection.click,
-                        event: {
-                            dragstart: function(data, event) {
-                                $root.collection.drag(event, $data);
-                                return true;
-                            }
-                        }"
-                    > 
-                        <div data-bind="text: title" class='title song-title'></div>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </li>
-</ul>
+                }
+            ">
+            <div class='title artist-name' data-bind="">
+                <span data-bind="text: name"></span>
+            </div>
+            <ul data-bind="foreach: albums">
+                <li draggable='true'
+                    data-bind="css: {collapsed: !collectionData.expanded()},
+                    event: {
+                        dragstart: function(data, event) { 
+                            $root.collection.drag(event, $data);
+                            return true;
+                        },
+                        click: $root.collection.click
+                    }">
+                    <div class="title album-title" 
+                        data-bind="style: {backgroundImage: 'url(/art/' + $data.path() + '?s=48)'}">
+                        <span class='expander'> </span>
+                        <span data-bind="text: title"> </span>
+                        <span class="text: year"></span>
+                    </div>
+                    <ul data-bind="foreach: songs">
+                        <li draggable='true'
+                            data-bind="css: {collapsed: !collectionData.expanded()}, 
+                            click: $root.collection.click,
+                            event: {
+                                dragstart: function(data, event) {
+                                    $root.collection.drag(event, $data);
+                                    return true;
+                                }
+                            }"
+                        > 
+                            <div data-bind="text: title" class='title song-title'></div>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>

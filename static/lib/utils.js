@@ -122,6 +122,7 @@ var music;
     function setup() {
         music.root = new ViewModel();
         ko.applyBindings(music.root);
+        music.root.screen.refresh();
     }
     
     // For some reason, the default value binding doesn't appear to fire on

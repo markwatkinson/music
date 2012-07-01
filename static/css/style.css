@@ -1,20 +1,28 @@
 html {
     font-family: sans-serif;
+    font-size: 12px;
 }
 
 .collection {
     width: 19%;
     float: left;
     height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    font-size: 11px;
+    margin-right: 1%;
 }
 .playlist {
     float: left;
     width: 80%;
     height: 100%;
     overflow: auto;
+}
+
+
+.collection input {
+    max-width: 90%;
+}
+.collection .tree-container {
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .collection ul {
@@ -30,8 +38,10 @@ html {
     background-image: url(/static/assets/icons/arrow-right.png);
 }
 
-.collection > ul {
+.collection .tree-container > ul {
     width: 98%;
+    padding: 0;
+    margin: 0;
 }
 
 /* album box */
