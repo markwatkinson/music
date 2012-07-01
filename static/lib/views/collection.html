@@ -6,16 +6,18 @@
 
 <ul data-bind="foreach: $root.collection.artists">
     <li draggable='true'
-        data-bind="css: {collapsed: !collectionData.expanded()},
+        data-bind="css: {
+                collapsed: !collectionData.expanded()
+            },
             event: {
                 dragstart: function(data, event) { 
                     $root.collection.drag(event, $data);
                     return true;
-                }
+                },
+                click: $root.collection.click
             }
         ">
-        <div class='title artist-name' data-bind="event : {click:$root.collection.clickData.click}">
-            <span class='expander'> </span>
+        <div class='title artist-name' data-bind="">
             <span data-bind="text: name"></span>
         </div>
         <ul data-bind="foreach: albums">
@@ -25,11 +27,11 @@
                     dragstart: function(data, event) { 
                         $root.collection.drag(event, $data);
                         return true;
-                    }
+                    },
+                    click: $root.collection.click
                 }">
                 <div class="title album-title" 
-                    data-bind="event : {click:$root.collection.clickData.click},
-                        style: {backgroundImage: 'url(/art/' + $data.path() + '?s=48)'}">
+                    data-bind="style: {backgroundImage: 'url(/art/' + $data.path() + '?s=48)'}">
                     <span class='expander'> </span>
                     <span data-bind="text: title"> </span>
                     <span class="text: year"></span>
@@ -37,7 +39,7 @@
                 <ul data-bind="foreach: songs">
                     <li draggable='true'
                         data-bind="css: {collapsed: !collectionData.expanded()}, 
-                        click: $root.collection.clickData.click,
+                        click: $root.collection.click,
                         event: {
                             dragstart: function(data, event) {
                                 $root.collection.drag(event, $data);
@@ -45,7 +47,7 @@
                             }
                         }"
                     > 
-                        <span data-bind="text: title"></span>
+                        <div data-bind="text: title" class='title song-title'></div>
                     </li>
                 </ul>
             </li>

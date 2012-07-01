@@ -101,6 +101,12 @@ window.CollectionViewModel = function() {
             })
         }
     });
+    
+    this.click = function(data, event) {
+        event.stopPropagation();
+        self.clickData.click.call(data, event);
+        return false;
+    }
 
     this.load = function(callback) {
         var path = music.paths.data, artist;

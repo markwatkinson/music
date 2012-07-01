@@ -68,7 +68,8 @@ var music;
                 timer: null,
                 click: function(event) {
                     var time = +new Date(),
-                        doubleClick = time - obj.clickData.lastClick < threshold,
+                        diff = time - obj.clickData.lastClick,
+                        doubleClick = diff < threshold,
                         self = this;
                     if (doubleClick) {
                         clearTimeout(obj.clickData.timer);
