@@ -2,9 +2,6 @@
 window.CollectionViewModel = function() {
     var self = this,
         dragging = [];
-    
-    
-
 
     this.search = {
         term: '',

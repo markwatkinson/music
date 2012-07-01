@@ -56,8 +56,13 @@ var music;
         // double vs single click convenience stuff
         // adds a clickData object with a click() property which should be 
         // called on click events.
-        addClickHandler : function(obj, onSingleClick, onDoubleClick) {
+        // if wait is set to true, the singleClick will be delayed slightly
+        // to ensure it is not a double click event. Therefore, if wait is
+        // not sent, although the response is faster, the single click event
+        // will fire for the first click of a double click.
+        addClickHandler : function(obj, onSingleClick, onDoubleClick, wait) {
             var threshold = 150;
+            
             obj.clickData = {
                 lastClick: 0,
                 timer: null,
@@ -66,17 +71,19 @@ var music;
                         doubleClick = time - obj.clickData.lastClick < threshold,
                         self = this;
                     if (doubleClick) {
-                        console.log('doubleclick');
                         clearTimeout(obj.clickData.timer);
                         obj.clickData.lastClick = 0;
                         onDoubleClick.call(self, event);
                     } else {
                         obj.clickData.lastClick = time;
-                        obj.clickData.timer = setTimeout(function() {
-                            console.log('click');
-                            obj.clickData.lastClick = 0;
+                        if (!wait) {
                             onSingleClick.call(self, event);
-                        }, threshold);
+                        } else {
+                            obj.clickData.timer = setTimeout(function() {
+                                obj.clickData.lastClick = 0;
+                                onSingleClick.call(self, event);
+                            }, threshold);
+                        }
                     }
                 }
             }
