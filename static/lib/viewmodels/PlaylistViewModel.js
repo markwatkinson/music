@@ -186,6 +186,10 @@ window.PlaylistViewModel = function() {
         
     }
     
+    this.clear = function() {
+        self.songs.removeAll();
+    }
+    
     
     this.play = function() {
         
