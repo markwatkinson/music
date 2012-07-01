@@ -135,7 +135,7 @@ window.CollectionViewModel = function() {
                 }
             };
         
-        if (!this.search.active) {
+        if (!this.search.active && dragging.length) {
             music.utils.each(dragging, function(i, e) {
                 e.loadChildren(f);
             });
