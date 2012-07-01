@@ -84,8 +84,8 @@ html {
     /* this holds the album art as a bg image */
     background-repeat: no-repeat;
     background-position: 5px center;
-    min-height: 50px;
-    padding-left: 55px;
+    min-height: 42px;
+    padding-left: 47px;
 }
 
 .collection .album-title span {
