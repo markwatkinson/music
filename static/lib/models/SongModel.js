@@ -49,3 +49,16 @@ SongModel.prototype.clone = function() {
     s.album = this.album;
     return s;
 }
+
+
+SongModel.prototype.toJSON = function() {
+    // omit the album or it's circular
+    var property, ret = {};
+    for (property in this) {
+        if (this.hasOwnProperty(property) && property != 'album') {
+            ret[property] = this[property];
+        }
+    }
+    ret.uid = this.path();
+    return ret;
+}

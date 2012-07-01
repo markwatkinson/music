@@ -35,5 +35,4 @@ class ArtistJSONEncoder(json.JSONEncoder):
             return json.JSONEncoder.default(self, obj)
 
 def encode_artists(artists):
-    
     return json.dumps({'artists':artists}, cls=ArtistJSONEncoder)

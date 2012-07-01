@@ -1,3 +1,4 @@
+import json
 import os
 
 from flask import Flask, render_template, make_response, abort, send_file, request
@@ -43,7 +44,21 @@ def get(artist=None, album=None, song=None):
     c = collection.SQLCollection()
     a = c.get(artist, album, song)
     return jsonencoder.encode_artists(a)
-    
+
+# post request for information. This will typically be used to request multiple
+# things at once. 
+# At the moment we support a uids array where uid is a string passed to get()
+# TODO support individual artist/album/song fields
+@app.route('/gets/', methods=['POST'])
+def gets():
+    uids = json.loads(request.form.get('uids', '[]'))
+    c = collection.SQLCollection()
+    for uid in uids:
+        s = uid.split('/')
+        c.get(*s)
+    return jsonencoder.encode_artists(c.artists)
+
+
 @app.route('/play/<artist>/<album>/<song>/')
 def play(artist, album, song):
     """ Send the specified song """
@@ -103,8 +118,28 @@ def art(artist, album, song=None):
     im.save(tmpdir + tmpref, 'JPEG', quality=100)
     return send_file(tmpdir + tmpref)
 
+
+@app.route('/playlist/save/', methods=['POST'])
+def playlist_save():
+    """ Save a playlist.
+        Request is handled as POST:
+            playlist : json object
+            name : string
+    """
+    playlist_json = request.form.get('playlist', None)
+    playlist_name = request.form.get('name', None)
+    if not playlist_json or not playlist_name: abort(400)
+    path = appdir('persistent/playlists/' + playlist_name + '.json')
+    with open(path, 'w') as f:
+        f.write(playlist_json)
+    return 'ok'
     
-    
+@app.route('/playlist/get/<name>')
+def playlist_get(name):
+    # TODO: index of all playlists
+    return send_file(appdir('persistent/playlists/' + name + '.json'))
+
+
 @app.route('/rescan')
 def rescan():
     """ Fully rescans the collection """

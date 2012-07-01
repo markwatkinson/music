@@ -89,3 +89,15 @@ AlbumModel.prototype.loadChildren = function(complete) {
 AlbumModel.prototype.path = function() {
     return this.artist.path() + '/' + this.url;
 }
+
+
+AlbumModel.prototype.toJSON = function() {
+    // omit the artist or it's circular
+    var property, ret = {};
+    for (property in this) {
+        if (this.hasOwnProperty(property) && property != 'artist') {
+            ret[property] = this[property];
+        }
+    }
+    return ret;
+}

@@ -53,9 +53,19 @@ window.PlaylistViewModel = function() {
                 return c;
             }
         },
+        addPlaylistData = function(obj) {
+            if (obj instanceof SongModel) {
+                obj.playlistData = { 
+                    selected: ko.observable(false)
+                }
+            }
+        },
         ignoreIndex = false,
-        sortBy = null,
         seekPoller = null;
+        
+    this._sortBy = null;
+        
+    this.name = ko.observable('Default');
     
     // dummy variable, referenced by seek() to trigger an update
     this.seekPos = ko.observable(0);
@@ -69,13 +79,13 @@ window.PlaylistViewModel = function() {
     this.index = ko.observable(-1);
     
     this.sortBy = ko.computed({
-        read: function(){ return sortBy; },
+        read: function(){ return self._sortBy; },
         write: function(field) {
-            var lastField = sortBy,
+            var lastField = self._sortBy,
                 sortCmp = comparators[field], currentSong = this.currentSong();
             
             if (sortCmp) {
-                sortBy = field;
+                self._sortBy = field;
                 if (lastField === field) {
                     self.songs.reverse();
                 } else {
@@ -133,14 +143,11 @@ window.PlaylistViewModel = function() {
     
     this.addToPlaylist = function(obj, autoPlay) {
         var index = 0, s;
-        sortBy = null;
+        self._sortBy = null;
         if (typeof autoPlay === 'undefined') autoPlay = true;
         if (obj instanceof SongModel) {
             s = obj.clone();
-            // this probably shouldn't be here
-            s.playlistData = {
-                selected: ko.observable(false)
-            };
+            addPlaylistData(s);
             self.songs.push(s);
             index = self.songs().length;
         } else if (obj instanceof AlbumModel) {
@@ -373,15 +380,64 @@ window.PlaylistViewModel = function() {
         s.playlistData.selected(!s.playlistData.selected());
     }
     
-    /*
-    audioElement.addEventListener('ended', function() {
-        console.log('ended playback');
-        self.next();
-    }, false);
-    audioElement.addEventListener('durationchange', function() {
+    
+    
+    this.save = function() {
+        var path = 'playlist/save/';
+        $.post(path, {name: self.name(), playlist: ko.toJSON(self)});
+    }
+    
+    this.load = function() {
+        // loads from the server
+        // TODO name shouldn't have to be pre-set but putting it as an arg
+        // breaks things with the way the template calls this func. 
+        var path, name;
+        name = name || self.name();
+        path = '/playlist/get/' + encodeURIComponent(name) + '?' + (+new Date);
+        console.log(path, self.name());
         
-    }, false);
-    */
-    
-    
+        music.utils.getJSON(path, function(data) {
+            var json = data;
+            var key, value;
+            var songs = [], uids = [];
+            
+            self.stop();
+            
+            // we only really care about these, I think.
+            self.name(json.name);
+            self.random(json.random);
+            self.repeat(json.repeat);
+            self.index(json.index);
+            self.currentSrc(json.currentSrc);
+            
+            // now we're going to bring in the song data
+            music.utils.each(json.songs, function(i, e) {
+                uids.push(e.uid);
+            });
+            
+            $.post('gets/', {uids: JSON.stringify(uids)}, function(data, textStatus) {
+                //data contains the JSON object
+                //textStatus contains the status: success, error, etc
+                // TODO think this func needs to handle its own HTTP errors
+                var artist, album, song, artists = [];
+                
+                
+                music.utils.each(data.artists, function(i, e) {
+                    artist = new ArtistModel(e);
+                    artists.push(artist);
+                });
+                music.utils.each(artists, function(i, artist) {
+                    music.utils.each(artist.albums(), function(i, album) {
+                        music.utils.each(album.songs(), function(i, song) {
+                            addPlaylistData(song);
+                            songs.push(song);
+                        });
+                    });
+                });
+                self.songs(songs);
+            }, 'json');
+        });
+    }
+
+
 }
