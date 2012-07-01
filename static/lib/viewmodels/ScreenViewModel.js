@@ -3,9 +3,19 @@
     window.ScreenViewModel = function() {
         var self = this;
         this.height = ko.observable(0);
+        this.width = ko.observable(0);
         this.appHeight = ko.computed(function() {
             var h = self.height();
             return Math.max(h-20, 0);
+        });
+        
+        this.collectionPanelWidth = ko.computed(function() {
+            return 200;
+        });
+        
+        this.playlistPanelWidth = ko.computed(function() {
+            var width = self.width();
+            return $('.app-container').width() - $('.collection').outerWidth(true);
         });
         
         
@@ -24,15 +34,16 @@
                 // dummy
             }
         });
-        var setHeight = function() {
+        var resize = function() {
             var h = $(window).height();
             self.height(h);
+            self.width($(window).width());
             self.treeHeight(0);
         }
-        $(window).resize(setHeight);
+        $(window).resize(resize);
         
         this.refresh = function() {
-            setHeight();
+            resize();
         };
 
     }

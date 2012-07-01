@@ -25,8 +25,12 @@
   <body>
   
     <div class='app-container' data-bind="style: {height: $root.screen.appHeight() + 'px'}">
-        <div class='collection' data-bind='template: {name: "collection"}'></div>
-        <div class='playlist' data-bind='template: {name: "playlist"}'></div>
+        <div class='collection' data-bind='template: {name: "collection"},
+            style: {width: $root.screen.collectionPanelWidth() + "px" }
+        '></div>
+        <div class='playlist' data-bind='template: {name: "playlist"},
+            style: {width: $root.screen.playlistPanelWidth() + "px" }
+        '></div>
     </div>
     
     <div class='audio'>
