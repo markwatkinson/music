@@ -158,6 +158,29 @@ window.PlaylistViewModel = function() {
         }
     }
     
+    this.dragStart = function(event, item) {
+        // why is this on originalEvent?!
+        // I thought this was only added by jquery but jquery should not be 
+        // involved in this event...
+        event.originalEvent.dataTransfer.setData('text/html', null); 
+        console.log('Drag', event);
+        return true;
+    }
+    
+    
+    this.drop = function(event) {
+        var source = event.originalEvent.dataTransfer.getData('text/html'),
+            items;
+        if (source == 'collection') {
+            items = music.root.collection.doWithDragged(function(items) {
+                music.utils.each(items, function(i, e) {
+                    self.addToPlaylist(e);
+                });
+            });
+        }
+        console.log('drop received from', source);
+    }
+    
 
     this.removeIndex = function(index) {
         

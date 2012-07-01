@@ -21,7 +21,9 @@
     data-bind="with: $root.playlist,
         event: { 
             click: function(data, event) { event.target.focus(); },
-            keydown: function(data, event){ return $root.playlist.selection.keyPress(event); }
+            keydown: function(data, event){ return $root.playlist.selection.keyPress(event); },
+            dragover: function(data, event){event.stopPropagation(); event.preventDefault(); return true; },
+            drop: function(data, event){ $root.playlist.drop(event); }
         }
     ">
 
@@ -35,6 +37,7 @@
     </thead>
     <tbody data-bind="foreach: songs">
         <tr
+            draggable='true'
             data-bind="css: {
                 current : $index() == $root.playlist.index(),
                 selected: playlistData.selected()
@@ -42,7 +45,7 @@
             event: {
                 click: function(data, event) { $root.playlist.selection.click(event, $index()) },
                 dblclick: function(){$root.playlist.playIndex( $index() )},
-                
+                dragstart: function(data, event){$root.playlist.dragStart(event, data); return true},
             }">
             <td data-bind="text: trackNo"></td>
             <td data-bind="text: title"></td>

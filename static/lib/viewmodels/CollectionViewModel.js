@@ -1,6 +1,7 @@
 "use strict";
 window.CollectionViewModel = function() {
-    var self = this;
+    var self = this,
+        dragging = [];
     
     
 
@@ -117,5 +118,33 @@ window.CollectionViewModel = function() {
             });
             self.artists(self.collection);
         });
+    }
+    
+    
+    this.drag = function(event, item) {
+        console.log('dragging', item);
+        event.stopPropagation();
+        event.originalEvent.dataTransfer.setData('text/html', 'collection');
+        dragging.length = 0;
+        dragging.push(item);
+    }
+    this.doWithDragged = function(action) {
+        // this gives us a chance to wait for the node to load fully
+        var waiting = dragging.length,
+            f = function() {
+                waiting--;
+                if (waiting == 0) {
+                    action(dragging);
+                }
+            };
+        
+        if (!this.search.active) {
+            music.utils.each(dragging, function(i, e) {
+                e.loadChildren(f);
+            });
+        } else {
+            // this is fully loaded already
+            f();
+        }
     }
 }
