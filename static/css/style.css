@@ -138,6 +138,31 @@ html {
     user-select: none;
 }
 
+
+.playlist .bar { 
+    position: relative;
+    min-height: 100px;
+}
+
+.playlist .now-playing {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding-right: 100px;
+    background-repeat: no-repeat;
+    background-position: right center;
+    min-height: 100px;
+    
+}
+.playlist .now-playing::before {
+    content: "Now playing:";
+    font-weight: bold;
+}
+.playlist .now-playing .title {
+    display: block;
+}
+
+
 .playback-controls a.control {
     width: 32px;
     height: 32px;

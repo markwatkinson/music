@@ -1,32 +1,45 @@
-<div class='playback-controls'>
-    <!-- need to do something about all this... -->
-    <a href='#' class='control'
-    data-bind="text: ($root.playlist.paused() || !$root.playlist.playing())? 'Play' : 'Pause',
-        click: function() {
-            console.log($root.playlist.playing(), $root.playlist.paused());
-            if (!$root.playlist.playing() || $root.playlist.paused()) $root.playlist.play();
-            else $root.playlist.pause();
-        },
-        css : {
-            'play' : !$root.playlist.playing() || $root.playlist.paused(),
-            'pause': $root.playlist.playing() &amp;&amp; !$root.playlist.paused()
-        }
-    "></a>
-    <a href='#' data-bind="click: $root.playlist.stop" class='control stop'>Stop</a>
-    <a href='#' data-bind="click: $root.playlist.next" class='control next'>Next</a>
-    <input type="range" step="any" id="seekbar" min=0 data-bind="attr: {max: $root.playlist.currentSongLength()},
-        value: $root.playlist.seek"></input>
-</div>
+<div class='bar'>
+    <div class='playback-controls'>
+        <!-- need to do something about all this... -->
+        <a href='#' class='control'
+        data-bind="text: ($root.playlist.paused() || !$root.playlist.playing())? 'Play' : 'Pause',
+            click: function() {
+                console.log($root.playlist.playing(), $root.playlist.paused());
+                if (!$root.playlist.playing() || $root.playlist.paused()) $root.playlist.play();
+                else $root.playlist.pause();
+            },
+            css : {
+                'play' : !$root.playlist.playing() || $root.playlist.paused(),
+                'pause': $root.playlist.playing() &amp;&amp; !$root.playlist.paused()
+            }
+        "></a>
+        <a href='#' data-bind="click: $root.playlist.stop" class='control stop'>Stop</a>
+        <a href='#' data-bind="click: $root.playlist.next" class='control next'>Next</a>
+        <input type="range" step="any" id="seekbar" min=0 data-bind="attr: {max: $root.playlist.currentSongLength()},
+            value: $root.playlist.seek"></input>
+    </div>
 
-<div class='playlist-controls'>
-    <a href='#' data-bind="click: $root.playlist.selection.remove">Delete selected</a>
-    <a href='#' data-bind="click: $root.playlist.clear">Clear</a>
-    <br/>
-    <a href='#' data-bind="click: $root.playlist.save">Save</a>
-    <a href='#' data-bind="click: $root.playlist.load">Load</a>
-    
-</div>
+    <!-- ko if: $root.playlist.currentSong -->
+        <!-- ko with: $root.playlist.currentSong -->
+        <div class='now-playing'
+            data-bind='style: { backgroundImage: "url(/art/" + path() + "?s=96)" }'
+        >
+            <span class='title song-title' data-bind='text: title'></span>
+            <span class='title artist-name' data-bind='text: album.artist.name'></span>
+            <span class='title album-title' data-bind='text: album.title'></span>
+        </div>
+        <!-- /ko -->
+    <!-- /ko -->
 
+    <div class='playlist-controls'>
+        <a href='#' data-bind="click: $root.playlist.selection.remove">Delete selected</a>
+        <a href='#' data-bind="click: $root.playlist.clear">Clear</a>
+        <br/>
+        <a href='#' data-bind="click: $root.playlist.save">Save</a>
+        <a href='#' data-bind="click: $root.playlist.load">Load</a>
+        
+    </div>
+</div>
 <table class='grid'
     tabindex="1"
     data-bind="with: $root.playlist,
