@@ -57,6 +57,41 @@ def gets():
         s = uid.split('/')
         c.get(*s)
     return jsonencoder.encode_artists(c.artists)
+    
+    
+def transcode(song):
+    """ handles transcoding if necessary, returns the new path """
+    
+    path = song.filepath
+    if path.endswith('.ogg'): return
+    if path.endswith('.flac'):
+        # there is a race condition here
+        import subprocess
+        newpath = appdir('tmp/ogg/' + song.album.artist.url + '/' +
+            song.album.url  + '/' + song.url + '.ogg')
+        song.filepath = newpath
+        if os.path.exists(newpath): return
+        
+        
+        flac = subprocess.Popen(['flac', '-d', '-c', path], stdout=subprocess.PIPE)
+        ogg = subprocess.Popen(['oggenc', '-q', '5',
+            '-N', str(song.trackno),
+            '-l', song.album.title,
+            '-a', song.album.artist.name,
+            '-t', song.title,
+            '-'], stdin=flac.stdout, stdout=subprocess.PIPE)
+        try:
+            os.makedirs(os.path.dirname(newpath))
+        except: 
+            pass
+        with open(newpath, 'wb') as f:
+            while True:
+                d = ogg.stdout.read(1024*100)
+                if not d: break
+                f.write(d)
+        song.filepath = newpath
+    else:
+        song.filepath = None
 
 
 @app.route('/play/<artist>/<album>/<song>/')
@@ -66,12 +101,17 @@ def play(artist, album, song):
     a = c.get(artist, album, song)
     try:
         song = a[0].albums[0].songs[0]
-        path = song.filepath
+        
         try:
-            return send_file(path)
-        except:
+            print 'transcoding'
+            transcode(song)
+            print 'transcoded'
+            return send_file(song.filepath)
+        except Exception as e:
+            raise
+            print str(e)
             abort(500)
-    except:
+    except IndexError:
         abort(404)
 
 @app.route('/search/<term>/')
