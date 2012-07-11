@@ -21,7 +21,6 @@ class ArtistJSONEncoder(json.JSONEncoder):
                 album = {
                     'title' : a.get('title'),
                     'year' : a.get('year'),
-                    'artworkUrl' : a.get('artworkurl'),
                     'songs' : songs,
                     'url' : a.get('url')
                 }
