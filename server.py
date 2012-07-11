@@ -3,26 +3,11 @@ import os
 
 from flask import Flask, render_template, make_response, abort, send_file, request
 
-from music import collection
-from music import jsonencoder
+from lib.collection import sqlcollection, fscollection
+from lib import jsonencoder
 
 
 app = Flask(__name__)
-
-# pretty prints artists/albums/songs
-# debugging only
-def pretty_artists(artists):
-    s = '<pre>'
-    for artist in artists:
-        s += 'Artist: ' + artist.name + '\n'
-        s += 'Albums:\n'
-        for album in artist.albums:
-            s += '\t' + album.title + ':\n'
-            for song in album.songs:
-                s += '\t\t' + song.title + '\n'
-    s += '</pre>'
-    return s
-    
 
 def appdir(d=''):
     """ Return the directory of a subdir in the project"""
@@ -41,7 +26,7 @@ def hello_world():
 @app.route('/get/<artist>/<album>/<song>/')
 def get(artist=None, album=None, song=None):
     """ Get JSON information about the given artist/album/song """
-    c = collection.SQLCollection()
+    c = sqlcollection.SQLCollection()
     a = c.get(artist, album, song)
     return jsonencoder.encode_artists(a)
 
@@ -52,7 +37,7 @@ def get(artist=None, album=None, song=None):
 @app.route('/gets/', methods=['POST'])
 def gets():
     uids = json.loads(request.form.get('uids', '[]'))
-    c = collection.SQLCollection()
+    c = sqlcollection.SQLCollection()
     for uid in uids:
         s = uid.split('/')
         c.get(*s)
@@ -62,23 +47,22 @@ def gets():
 def transcode(song):
     """ handles transcoding if necessary, returns the new path """
     
-    path = song.filepath
+    path = song.get('filepath')
     if path.endswith('.ogg'): return
     if path.endswith('.flac'):
         # there is a race condition here
         import subprocess
-        newpath = appdir('tmp/ogg/' + song.album.artist.url + '/' +
-            song.album.url  + '/' + song.url + '.ogg')
-        song.filepath = newpath
+        newpath = appdir('tmp/ogg/' + song.full_url() + '.ogg')
+        song.set_val('filepath', newpath)
         if os.path.exists(newpath): return
         
         
         flac = subprocess.Popen(['flac', '-d', '-c', path], stdout=subprocess.PIPE)
         ogg = subprocess.Popen(['oggenc', '-q', '5',
-            '-N', str(song.trackno),
-            '-l', song.album.title,
-            '-a', song.album.artist.name,
-            '-t', song.title,
+            '-N', str(song.get('trackno')),
+            '-l', song.get('album').get('title'),
+            '-a', song.get('album').get('artist').get('name'),
+            '-t', song.get('title'),
             '-'], stdin=flac.stdout, stdout=subprocess.PIPE)
         try:
             os.makedirs(os.path.dirname(newpath))
@@ -89,24 +73,25 @@ def transcode(song):
                 d = ogg.stdout.read(1024*100)
                 if not d: break
                 f.write(d)
-        song.filepath = newpath
+        song.set_val('filepath', newpath)
     else:
-        song.filepath = None
+        song.set_val('filepath', None)
 
 
 @app.route('/play/<artist>/<album>/<song>/')
 def play(artist, album, song):
     """ Send the specified song """
-    c = collection.SQLCollection()
+    c = sqlcollection.SQLCollection()
     a = c.get(artist, album, song)
     try:
-        song = a[0].albums[0].songs[0]
+        album = a[0].get('albums')[0]
+        song = album.get('songs')[0]
         
         try:
             print 'transcoding'
             transcode(song)
             print 'transcoded'
-            return send_file(song.filepath)
+            return send_file(song.get('filepath'))
         except Exception as e:
             raise
             print str(e)
@@ -117,7 +102,7 @@ def play(artist, album, song):
 @app.route('/search/<term>/')
 def search(term):
     """ Search for a particular term """
-    c = collection.SQLCollection()
+    c = sqlcollection.SQLCollection()
     a = c.search(term.strip())
     return jsonencoder.encode_artists(a)
 
@@ -127,11 +112,12 @@ def art(artist, album, song=None):
     """ Send the artwork for the given album """
     import hashlib
     
-    c = collection.SQLCollection()
+    c = sqlcollection.SQLCollection()
     a = c.get(artist, album)
     artpath = ''
     try:
-        artpath = a[0].albums[0].artworkurl
+        album = a[0].get('albums')[0]
+        artpath = album.get('artworkurl')
     except:
         abort(404)
 
@@ -139,7 +125,7 @@ def art(artist, album, song=None):
     
     
     tmpdir = appdir('tmp/art/')
-    tmpref = hashlib.md5(a[0].url + '/' + a[0].albums[0].url).hexdigest() + '_' + str(size)
+    tmpref = hashlib.md5(album.full_url()).hexdigest() + '_' + str(size)
     tmpref += '.jpg'
     if not os.path.exists(tmpdir):
         os.mkdir(tmpdir)
@@ -183,11 +169,11 @@ def playlist_get(name):
 @app.route('/rescan')
 def rescan():
     """ Fully rescans the collection """
-    c = collection.FSCollection('/mnt/storage/music/')
-    c.build_collection()
-    c2 = collection.SQLCollection()
+    c = fscollection.FSCollection('/mnt/storage/music/')
+    c.build()
+    c2 = sqlcollection.SQLCollection()
+    c2.empty()    
     c2.artists = c.artists
-    c2.empty()
     c2.write()
     return 'ok'
 
