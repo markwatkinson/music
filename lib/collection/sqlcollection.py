@@ -16,7 +16,7 @@ class SQLCollection(Collection):
         
         self.__setup()
         self.connection = None
-        
+        self.artists = []
         
     def __connect(self):
         if self.connection is None:
@@ -67,7 +67,6 @@ class SQLCollection(Collection):
         return self.artists
 
     def empty(self):
-        self.artists = []
         query = '''
             DELETE FROM songs;
             DELETE FROM albums;
@@ -79,7 +78,7 @@ class SQLCollection(Collection):
 
 
     def get(self, artist=None, album=None, song=None):
-        self.artists = []
+        print artist, album, song
         query = 'SELECT * FROM artists '
         subs = []
         if artist:
@@ -98,10 +97,10 @@ class SQLCollection(Collection):
         cursor.execute(query, tuple(subs))
         r = self.__build_result(cursor)
         self.close()
+        print r
         return r
         
     def search(self, term):
-        self.artists = []
         connection = self.__connect()
         cursor = connection.cursor()
         
@@ -129,7 +128,6 @@ class SQLCollection(Collection):
         '''
         for q in [q1, q2, q3]:
             t = ('%' + term + '%',)
-            print 
             cursor.execute(q, t)
             self.__build_result(cursor)
         return self.artists

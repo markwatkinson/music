@@ -203,8 +203,62 @@
         }, 500);
         
         
+    this.save = function() {
+        var path = 'playlist/save/';
+        $.post(path, {name: self.name(), playlist: ko.toJSON(self)});
+    }
+    
+    this.load = function() {
+        // loads from the server
+        // TODO name shouldn't have to be pre-set but putting it as an arg
+        // breaks things with the way the template calls this func.
+        var path, name;
+        name = name || self.name();
+        path = '/playlist/get/' + encodeURIComponent(name) + '?' + (+new Date);
+        console.log(path, self.name());
         
-        
+        music.utils.getJSON(path, function(data) {
+            var json = data;
+            var key, value;
+            var songs = [], uids = [];
+            
+            self.stop();
+            
+            // we only really care about these, I think.
+            self.name(json.name);
+            self.random(json.random);
+            self.repeat(json.repeat);
+
+            // now we're going to bring in the song data
+            music.utils.each(json.songs, function(i, e) {
+                uids.push(e.uid);
+            });
+            
+            $.post('gets/', {uids: JSON.stringify(uids)}, function(data, textStatus) {
+                //data contains the JSON object
+                //textStatus contains the status: success, error, etc
+                // TODO think this func needs to handle its own HTTP errors
+                var artist, album, song, artists = [];
+                console.log(data, textStatus);
+                
+                music.utils.each(data.artists, function(i, e) {
+                    artist = new ArtistModel(e);
+                    artists.push(artist);
+                });
+                music.utils.each(artists, function(i, artist) {
+                    music.utils.each(artist.albums(), function(i, album) {
+                        music.utils.each(album.songs(), function(i, song) {
+                            console.log(song);
+                            addPlaylistData(song);
+                            songs.push(song);
+                        });
+                    });
+                });
+                self.songs(songs);
+            }, 'json');
+        });
+    }
+
 
     }
 }());
