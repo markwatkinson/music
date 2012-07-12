@@ -26,13 +26,12 @@
     </div>
     <!-- /ko -->
     <div class='playlist-controls'>
-        <div data-bind='visible: $root.playlistVM.knownPlaylists().length'>
-            <label> Playlist: 
+        <div>
+            <label data-bind='visible: $root.playlistVM.knownPlaylists().length'> Playlist: 
             <select data-bind='options: $root.playlistVM.knownPlaylists,
                 value: $root.playlistVM.playlist.name,
                 event: { change : function($data, event) { $root.playlistVM.selectPlaylistChange(event) } }
             '></select></label>
-            
             <a href='#' data-bind="click: function() {$root.playlistVM.newPlaylist(true)}">New Playlist</a>
             <form data-bind="
                 visible: $root.playlistVM.newPlaylist(),
