@@ -164,7 +164,10 @@ def playlist_save():
 @app.route('/playlist/get/<name>')
 def playlist_get(name=None):
     if name is not None:
-        return send_file(appdir('persistent/playlists/' + name + '.json'))
+        try:
+            return send_file(appdir('persistent/playlists/' + name + '.json'))
+        except:
+            abort(404)
     else:
         #index
         files = os.listdir(appdir('persistent/playlists/'))
