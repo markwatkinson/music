@@ -20,6 +20,8 @@ window.AlbumModel = function(data) {
         }
     });
     this.set(data);
+    
+    this.loading = false;
 }
 
 
@@ -52,11 +54,10 @@ AlbumModel.prototype.loadChildren = function(complete) {
     var self = this,
     path = music.paths.data + this.path();
     
-    if (this.songsLoaded) {
-        complete();
-        return;
+    if (complete) {
+        this.addLoadCallback(complete);
     }
-    this.songsLoaded = true;
+    if (this.loading) return;
 
     music.utils.getJSON(path, function(data) {
         if (!data.artists || !data.artists.length || !data.artists[0].albums)
@@ -81,7 +82,8 @@ AlbumModel.prototype.loadChildren = function(complete) {
             var cmp = a.trackNo() - b.trackNo();
             return (cmp === 0)? cmp : (cmp<0? -1 : 1);
         });
-        if (complete) complete(self.songs());
+        self.loaded(true);
+        self.loading = false;
     });
 }
 

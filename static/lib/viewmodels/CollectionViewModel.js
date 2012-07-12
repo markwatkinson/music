@@ -94,10 +94,10 @@ window.CollectionViewModel = function() {
     }, function() {
         var item = this;
         if (self.search.active) {
-            music.root.addToPlaylist(item);
+            music.root.playlistVM.playlist.add(item);
         } else {
             item.loadChildren(function() {
-                music.root.playlist.addToPlaylist(item);
+                music.root.playlistVM.playlist.add(item);
             })
         }
     });

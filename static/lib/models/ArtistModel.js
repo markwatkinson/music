@@ -3,7 +3,7 @@ window.ArtistModel = function(data) {
     Model.call(this);
     this.name = ko.observable('');
     this.albums = ko.observableArray([]);
-    
+    this.loading = false;
     this.albumsLoaded = false;
     
     this.url = '';
@@ -53,11 +53,11 @@ ArtistModel.prototype.loadChildren = function(complete) {
     var self = this,
         path = music.paths.data + this.path();
     
-    if (self.albumsLoaded) { 
-        if (complete) complete();
-        return;
+    if (complete) {
+        this.addLoadCallback(complete);
     }
-    self.albumsLoaded = true;
+    if (this.loading) return;
+    
     music.utils.getJSON(path, function(data) {
         var waiting = 0, fetched=0;
         if (!data.artists || !data.artists.length || !data.artists[0].albums) {
@@ -86,7 +86,8 @@ ArtistModel.prototype.loadChildren = function(complete) {
                 e.loadChildren(function() {
                     fetched++;
                     if (fetched == waiting) {
-                        if (complete) complete(self.albums());
+                        self.loaded(true);
+                        self.loading = false;
                     }
                 });
             });

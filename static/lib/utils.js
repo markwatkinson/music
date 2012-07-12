@@ -94,10 +94,10 @@ var music;
     
     // root viewmodel defn
     var ViewModel = function() {
-        this.collection = new CollectionViewModel();
-        this.collection.load();
-        this.playlist = new PlaylistViewModel();
-        this.screen = new ScreenViewModel();
+        this.collectionVM = new CollectionViewModel();
+        this.collectionVM.load();
+        this.playlistVM = new PlaylistViewModel();
+        this.screenVM = new ScreenViewModel();
     };
     
     
@@ -122,7 +122,7 @@ var music;
     function setup() {
         music.root = new ViewModel();
         ko.applyBindings(music.root);
-        music.root.screen.refresh();
+        music.root.screenVM.refresh();
     }
     
     // For some reason, the default value binding doesn't appear to fire on

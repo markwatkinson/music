@@ -23,7 +23,29 @@ window.Model = function() {
             this.collectionData.expanded( !this.collectionData.expanded() );
         }.bind(this)
     };
+    
+    this.onLoadCallbacks = [];
+    
+    this.loaded = ko.observable(false);
+    this.loaded.subscribe(function(val) {
+        if (!val) return;
+        var i;
+        for (i=0; i<self.onLoadCallbacks.length; i++) {
+            self.onLoadCallbacks[i].call();
+        }
+        
+    });
 }
+
+Model.prototype.addLoadCallback = function(cb) {
+    var i;
+    for (i=0; i<this.onLoadCallbacks.length; i++) {
+        if (this.onLoadCallbacks[i] === cb) return;
+    }
+    this.onLoadCallbacks.push(cb);
+    if (this.loaded()) cb();
+}
+
 
 Model.prototype.addVmData = function(dataSet, name, value) {
     if (this[dataSet][name]) return;

@@ -13,6 +13,7 @@
     <script type='text/javascript' src='static/lib/models/ArtistModel.js'></script>
     <script type='text/javascript' src='static/lib/models/AlbumModel.js'></script>
     <script type='text/javascript' src='static/lib/models/SongModel.js'></script>
+    <script type='text/javascript' src='static/lib/models/PlaylistModel.js'></script>
     
     
     <script type='text/javascript' src='static/lib/viewmodels/CollectionViewModel.js'></script>
@@ -24,17 +25,17 @@
   </head>
   <body>
   
-    <div class='app-container' data-bind="style: {height: $root.screen.appHeight() + 'px'}">
+    <div class='app-container' data-bind="style: {height: $root.screenVM.appHeight() + 'px'}">
         <div class='collection' data-bind='template: {name: "collection"},
-            style: {width: $root.screen.collectionPanelWidth() + "px" }
+            style: {width: $root.screenVM.collectionPanelWidth() + "px" }
         '></div>
         <div class='playlist' data-bind='template: {name: "playlist"},
-            style: {width: $root.screen.playlistPanelWidth() + "px" }
+            style: {width: $root.screenVM.playlistPanelWidth() + "px" }
         '></div>
     </div>
     
     <div class='audio'>
-        <audio preload="auto" class='current' id='current-audio' data-bind="attr: {src: $root.playlist.currentSrc}"></audio>
+        <audio preload="auto" class='current' id='current-audio' data-bind="attr: {src: $root.playlistVM.playlist.currentSource}"></audio>
     </div>
 
   </body>

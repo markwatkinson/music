@@ -1,22 +1,22 @@
 <div class='search-container'>
-    <input type='text' data-bind='emptyValue: $root.collection.searchTerm' class='search' placeholder='Search collection'/> 
-    <a href='#' data-bind="click: function() {$root.collection.searchTerm('')}">Clear</a>
+    <input type='text' data-bind='emptyValue: $root.collectionVM.searchTerm' class='search' placeholder='Search collection'/> 
+    <a href='#' data-bind="click: function() {$root.collectionVM.searchTerm('')}">Clear</a>
 </div>
 
 <div class='tree-container'
-    data-bind="style: {height: $root.screen.treeHeight() + 'px'}"
+    data-bind="style: {height: $root.screenVM.treeHeight() + 'px'}"
     >
-    <ul data-bind="foreach: $root.collection.artists">
+    <ul data-bind="foreach: $root.collectionVM.artists">
         <li draggable='true'
             data-bind="css: {
                     collapsed: !collectionData.expanded()
                 },
                 event: {
                     dragstart: function(data, event) { 
-                        $root.collection.drag(event, $data);
+                        $root.collectionVM.drag(event, $data);
                         return true;
                     },
-                    click: $root.collection.click
+                    click: $root.collectionVM.click
                 }
             ">
             <div class='title artist-name' data-bind="">
@@ -27,10 +27,10 @@
                     data-bind="css: {collapsed: !collectionData.expanded()},
                     event: {
                         dragstart: function(data, event) { 
-                            $root.collection.drag(event, $data);
+                            $root.collectionVM.drag(event, $data);
                             return true;
                         },
-                        click: $root.collection.click
+                        click: $root.collectionVM.click
                     }">
                     <div class="title album-title" 
                         data-bind="style: {backgroundImage: 'url(/art/' + $data.path() + '?s=40)'}">
@@ -41,10 +41,10 @@
                     <ul data-bind="foreach: songs">
                         <li draggable='true'
                             data-bind="css: {collapsed: !collectionData.expanded()}, 
-                            click: $root.collection.click,
+                            click: $root.collectionVM.click,
                             event: {
                                 dragstart: function(data, event) {
-                                    $root.collection.drag(event, $data);
+                                    $root.collectionVM.drag(event, $data);
                                     return true;
                                 }
                             }"

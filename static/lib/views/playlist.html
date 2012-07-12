@@ -1,75 +1,69 @@
 <div class='bar'>
     <div class='playback-controls'>
-        <!-- need to do something about all this... -->
+
         <a href='#' class='control'
-        data-bind="text: ($root.playlist.paused() || !$root.playlist.playing())? 'Play' : 'Pause',
-            click: function() {
-                console.log($root.playlist.playing(), $root.playlist.paused());
-                if (!$root.playlist.playing() || $root.playlist.paused()) $root.playlist.play();
-                else $root.playlist.pause();
-            },
+        data-bind="text: $root.playlistVM.controls.playOrPauseText,
+            click: $root.playlistVM.controls.playOrPauseClick,
             css : {
-                'play' : !$root.playlist.playing() || $root.playlist.paused(),
-                'pause': $root.playlist.playing() &amp;&amp; !$root.playlist.paused()
+                'play' : $root.playlistVM.state() !== $root.playlistVM.playStates.PLAYING,
+                'pause': $root.playlistVM.state() === $root.playlistVM.playStates.PLAYING
             }
         "></a>
-        <a href='#' data-bind="click: $root.playlist.stop" class='control stop'>Stop</a>
-        <a href='#' data-bind="click: $root.playlist.next" class='control next'>Next</a>
-        <input type="range" step="any" id="seekbar" min=0 data-bind="attr: {max: $root.playlist.currentSongLength()},
-            value: $root.playlist.seek"></input>
+        <a href='#' data-bind="click: $root.playlistVM.playlist.stop" class='control stop'>Stop</a>
+        <a href='#' data-bind="click: $root.playlistVM.playlist.next" class='control next'>Next</a>
+        <input type="range" step="any" id="seekbar" min=0 data-bind="attr: {max: $root.playlistVM.playlist.currentSongLength()},
+            value: $root.playlistVM.playlist.seek"></input>
     </div>
 
-    <!-- ko if: $root.playlist.currentSong -->
-        <!-- ko with: $root.playlist.currentSong -->
-        <div class='now-playing'
-            data-bind='style: { backgroundImage: "url(/art/" + path() + "?s=96)" }'
-        >
-            <span class='title song-title' data-bind='text: title'></span>
-            <span class='title artist-name' data-bind='text: album.artist.name'></span>
-            <span class='title album-title' data-bind='text: album.title'></span>
-        </div>
-        <!-- /ko -->
+    <!-- ko if: $root.playlistVM.playlist.currentSong() -->
+    <div class='now-playing' data-bind='
+        visible: $root.playlistVM.playlist.currentSong(),
+        style: { backgroundImage: "url(/art/" + $root.playlistVM.playlist.currentSong().path() + "?s=96)" }'
+    >
+        <span class='title song-title' data-bind='text: $root.playlistVM.playlist.currentSong().title'></span>
+        <span class='title artist-name' data-bind='text: $root.playlistVM.playlist.currentSong().album.artist.name'></span>
+        <span class='title album-title' data-bind='text: $root.playlistVM.playlist.currentSong().album.title'></span>
+    </div>
     <!-- /ko -->
-
     <div class='playlist-controls'>
-        <a href='#' data-bind="click: $root.playlist.selection.remove">Delete selected</a>
-        <a href='#' data-bind="click: $root.playlist.clear">Clear</a>
+        <a href='#' data-bind="click: $root.playlistVM.selection.remove">Delete selected</a>
+        <a href='#' data-bind="click: $root.playlistVM.clear">Clear</a>
         <br/>
-        <a href='#' data-bind="click: $root.playlist.save">Save</a>
-        <a href='#' data-bind="click: $root.playlist.load">Load</a>
+        <a href='#' data-bind="click: $root.playlistVM.save">Save</a>
+        <a href='#' data-bind="click: $root.playlistVM.load">Load</a>
         
     </div>
 </div>
 <table class='grid'
     tabindex="1"
-    data-bind="with: $root.playlist,
+    data-bind="with: $root.playlistVM,
         event: { 
             click: function(data, event) { event.target.focus(); },
-            keydown: function(data, event){ return $root.playlist.selection.keyPress(event); },
+            keydown: function(data, event){ return $root.playlistVM.selection.keyPress(event); },
             dragover: function(data, event){event.stopPropagation(); event.preventDefault(); return true; },
-            drop: function(data, event){ $root.playlist.drop(event); }
+            drop: function(data, event){ $root.playlistVM.drop(event); }
         }
     ">
 
     <thead>
-        <th data-bind="click: sortBy.bind($data, 'trackNo')">#</th> 
-        <th data-bind="click: sortBy.bind($data, 'title')">Title</th>
-        <th data-bind="click: sortBy.bind($data, 'artist')">Artist</th> 
-        <th data-bind="click: sortBy.bind($data, 'album')">Album</th> 
-        <th data-bind="click: sortBy.bind($data, 'year')">Year</th> 
-        <th data-bind="click: sortBy.bind($data, 'length')">Length</th>
+        <th data-bind="click: playlist.sortBy.bind($data, 'trackNo')">#</th> 
+        <th data-bind="click: playlist.sortBy.bind($data, 'title')">Title</th>
+        <th data-bind="click: playlist.sortBy.bind($data, 'artist')">Artist</th> 
+        <th data-bind="click: playlist.sortBy.bind($data, 'album')">Album</th> 
+        <th data-bind="click: playlist.sortBy.bind($data, 'year')">Year</th> 
+        <th data-bind="click: playlist.sortBy.bind($data, 'length')">Length</th>
     </thead>
-    <tbody data-bind="foreach: songs">
+    <tbody data-bind="foreach: playlist.songs">
         <tr
             draggable='true'
             data-bind="css: {
-                current : $index() == $root.playlist.index(),
+                current : playlistData.playing(),
                 selected: playlistData.selected()
             }, 
             event: {
-                click: function(data, event) { $root.playlist.selection.click(event, $index()) },
-                dblclick: function(){$root.playlist.playIndex( $index() )},
-                dragstart: function(data, event){$root.playlist.dragStart(event, data); return true},
+                click: function(data, event) { $root.playlistVM.selection.click(event, $index()) },
+                dblclick: function(){$root.playlistVM.playlist.play( $data )},
+                dragstart: function(data, event){$root.playlistVM.dragStart(event, data); return true},
             }">
             <td data-bind="text: trackNo"></td>
             <td data-bind="text: title"></td>
