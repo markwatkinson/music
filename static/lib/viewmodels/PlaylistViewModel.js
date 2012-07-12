@@ -1,8 +1,14 @@
 "use strict";
 window.PlaylistViewModel = function() {
-    var self = this;
+    var self = this,
+        ignorePlaylistSelectChanges = false;
     
     this.playlist = new PlaylistModel( document.getElementById('current-audio') );
+    
+    this.knownPlaylists = ko.observableArray([]);
+    
+    // used to show some widgets to create a new playlist
+    this.newPlaylist = ko.observable(false);
     
     this.playStates = {
         'STOPPED' : 0,
@@ -166,5 +172,45 @@ window.PlaylistViewModel = function() {
         if (!s) return;
         s.playlistData.selected(!s.playlistData.selected());
     }
+    
+    
+    this.loadPlaylist = function(name) {
+        self.playlist.name(name);
+        self.playlist.load();
+    }
+    this.loadPlaylists = function() {
+        $.getJSON('playlist/get/', function(data) {
+            // data should be an array
+            data.sort();
+            self.knownPlaylists(data);
+        });
+    }
+    
+    this.selectPlaylistChange = function(event) {
+        var $e, val;
+        if (ignorePlaylistSelectChanges) return;
+        $e = $(event.target);
+        val = $e.val();
+        if (val) 
+            self.loadPlaylist(val);
+    }
+    
+    this.createNewPlaylist = function(formElement) {
+        var $e = $(formElement);
+        var name = $e.find('input[type=text]').val();
+        ignorePlaylistSelectChanges = true;
+        self.knownPlaylists.push(name);
+        
+        console.log('set name to', name);
+        self.playlist.name(name);
+        console.log('set name to', self.playlist.name());
+        self.playlist.save();
+        self.newPlaylist(false);
+        self.loadPlaylists();
+        ignorePlaylistSelectChanges = false;
+    }
+    
+    this.loadPlaylists();
+    this.playlist.load();
     
 }

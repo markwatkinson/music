@@ -171,7 +171,8 @@ def playlist_get(name=None):
         playlists = []
         for f in files: 
             if f.startswith('.'): continue
-            if f.endswith('.json'): playlists.append(f)
+            if f.endswith('.json'):
+                playlists.append(f[:-5])
         return json.dumps(playlists)
 
 

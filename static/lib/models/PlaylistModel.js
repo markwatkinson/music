@@ -162,7 +162,6 @@
             if (typeof autoplay === 'undefined') autoplay = true;
             // we only deal with songs so if it's a container (i.e. an artist or
             // album) then we'll recurse down to songs
-            console.log('adding', object);
             if (object instanceof SongModel) {
                 s = object.clone();
                 addPlaylistData(s);
@@ -178,6 +177,10 @@
             } else {
                 debugger;
             }
+        }
+        
+        this.clear = function() {
+            self.songs([]);
         }
         
         
@@ -209,6 +212,7 @@
         
     this.save = function() {
         var path = 'playlist/save/';
+        console.log('saving', self.name());
         $.post(path, {name: self.name(), playlist: ko.toJSON(self)});
     }
     
@@ -252,7 +256,6 @@
                 music.utils.each(artists, function(i, artist) {
                     music.utils.each(artist.albums(), function(i, album) {
                         music.utils.each(album.songs(), function(i, song) {
-                            console.log(song);
                             addPlaylistData(song);
                             songs.push(song);
                         });
