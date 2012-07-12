@@ -134,6 +134,10 @@
             self.paused(false);
             audioElement.play();
         }
+        this.playIndex = function(index) {
+            var s = self.songs()[index];
+            if (s) self.play(s);
+        }
         this.stop = function() {
             self.playing(false);
         }
