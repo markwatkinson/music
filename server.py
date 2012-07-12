@@ -159,11 +159,20 @@ def playlist_save():
     with open(path, 'w') as f:
         f.write(playlist_json.encode('utf-8'))
     return 'ok'
-    
+
+@app.route('/playlist/get/')
 @app.route('/playlist/get/<name>')
-def playlist_get(name):
-    # TODO: index of all playlists
-    return send_file(appdir('persistent/playlists/' + name + '.json'))
+def playlist_get(name=None):
+    if name is not None:
+        return send_file(appdir('persistent/playlists/' + name + '.json'))
+    else:
+        #index
+        files = os.listdir(appdir('persistent/playlists/'))
+        playlists = []
+        for f in files: 
+            if f.startswith('.'): continue
+            if f.endswith('.json'): playlists.append(f)
+        return json.dumps(playlists)
 
 
 @app.route('/rescan')
