@@ -125,10 +125,12 @@ class SQLCollection(Collection):
             SELECT * FROM artists
             INNER JOIN albums ON albums.album_artist = artists.artist_id
             INNER JOIN songs ON songs.song_album = albums.album_id AND
-                songs.song_title LIKE ?'
+                songs.song_title LIKE ?
         '''
         for q in [q1, q2, q3]:
-            cursor.execute(q, ('%' + term + '%',))
+            t = ('%' + term + '%',)
+            print 
+            cursor.execute(q, t)
             self.__build_result(cursor)
         return self.artists
         
