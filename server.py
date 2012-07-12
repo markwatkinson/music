@@ -157,7 +157,7 @@ def playlist_save():
     if not playlist_json or not playlist_name: abort(400)
     path = appdir('persistent/playlists/' + playlist_name + '.json')
     with open(path, 'w') as f:
-        f.write(playlist_json)
+        f.write(playlist_json.encode('utf-8'))
     return 'ok'
     
 @app.route('/playlist/get/<name>')
