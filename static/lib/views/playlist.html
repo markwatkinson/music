@@ -39,6 +39,7 @@
             ">
                 <label>Name <input type='text'></label>
                 <input type='submit' value='Create'/>
+                <input type='button' value='Cancel' data-bind='click: function() {$root.playlistVM.newPlaylist(false)}'/>
             </form>
         </div>
         <a href='#' data-bind="click: $root.playlistVM.playlist.clear">Clear</a>
