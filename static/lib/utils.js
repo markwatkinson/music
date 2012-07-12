@@ -21,7 +21,8 @@ var music;
  
         templates : {
             'collection' : 'collection.html',
-            'playlist' : 'playlist.html'
+            'playlist' : 'playlist.html',
+            'playlist-grid' : 'playlist-grid.html'
         },
 
         

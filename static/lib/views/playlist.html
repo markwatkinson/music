@@ -34,45 +34,14 @@
         
     </div>
 </div>
-<table class='grid'
-    tabindex="1"
-    data-bind="with: $root.playlistVM,
-        event: { 
-            click: function(data, event) { event.target.focus(); },
-            keydown: function(data, event){ return $root.playlistVM.selection.keyPress(event); },
-            dragover: function(data, event){event.stopPropagation(); event.preventDefault(); return true; },
-            drop: function(data, event){ $root.playlistVM.drop(event); }
-        }
-    ">
 
-    <thead>
-        <th data-bind="click: playlist.sortBy.bind($data, 'trackNo')">#</th> 
-        <th data-bind="click: playlist.sortBy.bind($data, 'title')">Title</th>
-        <th data-bind="click: playlist.sortBy.bind($data, 'artist')">Artist</th> 
-        <th data-bind="click: playlist.sortBy.bind($data, 'album')">Album</th> 
-        <th data-bind="click: playlist.sortBy.bind($data, 'year')">Year</th> 
-        <th data-bind="click: playlist.sortBy.bind($data, 'length')">Length</th>
-    </thead>
-    <tbody data-bind="foreach: playlist.songs">
-        <tr
-            draggable='true'
-            data-bind="css: {
-                current : playlistData.playing(),
-                selected: playlistData.selected()
-            }, 
-            event: {
-                click: function(data, event) { $root.playlistVM.selection.click(event, $index()) },
-                dblclick: function(){$root.playlistVM.playlist.play( $data )},
-                dragstart: function(data, event){$root.playlistVM.dragStart(event, data); return true},
-            }">
-            <td data-bind="text: trackNo"></td>
-            <td data-bind="text: title"></td>
-            <td data-bind="text: album.artist.name"></td>
-            <td data-bind="text: album.title"></td>
-            <td data-bind="text: album.year"></td>
-            <td data-bind="text: prettyLength"></td>
-        </tr>
-    </tbody>
-
-</table>
-
+<div class='grid-container'>
+    <!-- because CSS is stupid, to get a scrollable table and keep the widths nice
+        , we have to set up two identical tables, one with a hidden thead and one with a hidden
+        tbody. -->
+    <div class='header' data-bind='template: "playlist-grid"'></div>
+    <div class='body' data-bind='template: "playlist-grid",
+        style: {height: $root.screenVM.playlistGridHeight() + "px"}
+    '></div>
+    
+</div>

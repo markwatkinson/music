@@ -18,7 +18,8 @@
             return $('.app-container').width() - $('.collection').outerWidth(true);
         });
         
-        
+        this.playlistGridHeight = ko.observable(0);
+
         this.treeHeight = ko.computed({
             read: function() {
                 var h = self.height();
@@ -39,12 +40,18 @@
             self.height(h);
             self.width($(window).width());
             self.treeHeight(0);
+            
+            self.playlistGridHeight( 
+                self.appHeight() - 
+                $('.playlist .grid-container > .body').offset().top
+            );
         }
         $(window).resize(resize);
         
         this.refresh = function() {
             resize();
         };
+        
 
     }
 }(jQuery));

@@ -13,7 +13,6 @@ html {
     float: left;
     width: 80%;
     height: 100%;
-    overflow: auto;
 }
 
 
@@ -184,4 +183,16 @@ html {
 }
 .playback-controls .next {
     background-image: url(/static/assets/icons/player/next.png);
+}
+
+
+.playlist .grid-container {
+    overflow: auto;
+}
+
+.playlist .grid-container .header tbody { display: none; }
+.playlist .grid-container .header table { outline: none; }
+.playlist .grid-container .body thead { display: none; }
+.playlist .grid-container .body { 
+    overflow: auto;
 }
