@@ -6,7 +6,18 @@
 <div class='tree-container'
     data-bind="style: {height: $root.screenVM.treeHeight() + 'px'}"
     >
-    <ul data-bind="foreach: $root.collectionVM.artists">
+    <ul class='special' data-bind='foreach: $root.collectionVM.specialPlaylists'>
+        <li draggable='true' 
+            data-bind='text: name,
+            event: {
+                dragstart: function(data, event) { 
+                    $root.collectionVM.drag(event, $data);
+                    return true;
+                }
+            }'></li>
+    </ul>
+        
+    <ul class='artists' data-bind="foreach: $root.collectionVM.artists">
         <li draggable='true'
             data-bind="css: {
                     collapsed: !collectionData.expanded()

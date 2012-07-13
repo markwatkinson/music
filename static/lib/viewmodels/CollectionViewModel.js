@@ -15,6 +15,10 @@ window.CollectionViewModel = function() {
     this.collection = [];
     // they are referenced by the following
     this.artists = ko.observableArray([]);
+    this.specialPlaylists = [
+        new AllTracksPlaylistModel({id: 'all', name: 'All tracks'})
+    ]
+    
     
     this.searchTerm = ko.computed({
         read : function() { return self.search.term; },
@@ -122,8 +126,7 @@ window.CollectionViewModel = function() {
             self.artists(self.collection);
         });
     }
-    
-    
+
     this.drag = function(event, item) {
         console.log('dragging', item);
         event.stopPropagation();
@@ -131,18 +134,40 @@ window.CollectionViewModel = function() {
         dragging.length = 0;
         dragging.push(item);
     }
+    
+    
+    this.doWithDraggedSpecial = function(action, elements) {
+        ko.utils.arrayForEach(elements, function(e) {
+            e.dragFunc(action);
+        });
+    }
+    
+    
     this.doWithDragged = function(action) {
         // this gives us a chance to wait for the node to load fully
-        var waiting = dragging.length,
+        var waiting,
             f = function() {
                 waiting--;
                 if (waiting == 0) {
                     action(dragging);
                 }
-            };
+            }, 
+            special = [],
+            nonspecial = [];
         
-        if (!this.search.active && dragging.length) {
-            music.utils.each(dragging, function(i, e) {
+        ko.utils.arrayForEach(dragging, function(item) {
+            if (typeof item.dragFunc === 'function') {
+                special.push(item);
+            } else {
+                nonspecial.push(item);
+            }
+        });
+        
+        self.doWithDraggedSpecial(action, special);
+        waiting = nonspecial.length;
+        
+        if (!this.search.active && nonspecial.length) {
+            music.utils.each(nonspecial, function(i, e) {
                 e.loadChildren(f);
             });
         } else {
