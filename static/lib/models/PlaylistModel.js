@@ -154,7 +154,9 @@
             console.log('next', index);
             if (index > -1) {
                 nextSong = self.songs()[nextIndex];
-                self.play(nextSong);
+                if (nextSong)
+                    self.play(nextSong);
+                else self.stop();
             }
         }
         
