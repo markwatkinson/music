@@ -16,7 +16,8 @@ window.CollectionViewModel = function() {
     // they are referenced by the following
     this.artists = ko.observableArray([]);
     this.specialPlaylists = [
-        new AllTracksPlaylistModel({id: 'all', name: 'All tracks'})
+        // Knockout is too slow to deal with this so disable it for now
+        //new AllTracksPlaylistModel({id: 'all', name: 'All tracks'})
     ]
     
     
