@@ -175,8 +175,7 @@ window.PlaylistViewModel = function() {
     
     
     this.loadPlaylist = function(name) {
-        self.playlist.name(name);
-        self.playlist.load();
+        self.playlist.load(name);
     }
     this.loadPlaylists = function() {
         $.getJSON('playlist/get/', function(data) {
@@ -200,11 +199,8 @@ window.PlaylistViewModel = function() {
         var name = $e.find('input[type=text]').val();
         ignorePlaylistSelectChanges = true;
         self.knownPlaylists.push(name);
-        
-        console.log('set name to', name);
-        self.playlist.name(name);
-        console.log('set name to', self.playlist.name());
-        self.playlist.save();
+
+        self.playlist.save(name);
         self.newPlaylist(false);
         self.loadPlaylists();
         ignorePlaylistSelectChanges = false;

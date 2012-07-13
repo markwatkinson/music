@@ -242,10 +242,11 @@
         }, 500);
         
         
-        this.save = function() {
+        this.save = function(name) {
             var path;
             // queue the save operation
             if (self.syncing()) {
+                console.log('queueing save');
                 var s = self.syncing.subscribe(function(newVal) {
                     if (!newVal) self.save();
                     s.dispose();
@@ -253,19 +254,23 @@
                 return;
             }
             self.syncing(true);
+            console.log('saving');
+            if (typeof name !== 'undefined' && self.name() !== name) {
+                self.name(name);
+            }
             path = 'playlist/save/';
             $.post(path, {name: self.name(), playlist: ko.toJSON(self)},
                 function() { self.syncing(false); }
             );
         }
         
-        this.load = function() {
+        this.load = function(name) {
             // loads from the server
             // TODO name shouldn't have to be pre-set but putting it as an arg
             // breaks things with the way the template calls this func.
             var path, name;
             if (self.syncing()) {
-                console.log('queueing');
+                console.log('queueing load');
                 // I'm not sure if it makes more sense to queue this or to just
                 // drop it if a sync operation is already in progress
                 var s = self.syncing.subscribe(function(newVal) {

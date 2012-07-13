@@ -131,6 +131,23 @@ var music;
         music.root = new ViewModel();
         ko.applyBindings(music.root);
         music.root.screenVM.refresh();
+        
+//         var l = false;
+//         setInterval(function() {
+//             var p = music.root.playlistVM.playlist;
+//             if (l) {
+//                 p.syncing(false);
+//                 l = false;
+//                 console.log('artificial lock released');
+//             } else {
+//                 l = false;
+//                 if (!p.syncing()) {
+//                     console.log('artificial lock');
+//                     p.syncing(true);
+//                     l = true;
+//                 }
+//             }
+//         }, 5000);
     }
     
     // For some reason, the default value binding doesn't appear to fire on
