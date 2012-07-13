@@ -123,7 +123,7 @@ window.PlaylistViewModel = function() {
         },
         
         remove : function() {
-            self.playlist.songs.remove(function(s) {
+            self.playlist.remove(function(s) {
                 return s.playlistData.selected();
             });
         },

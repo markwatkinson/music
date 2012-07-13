@@ -33,6 +33,13 @@ var music;
     // in case we decide to lose jquery at a future date -
     // it keeps jquery out of the core
     window.music.utils = {
+        ajax : function(path, data) {
+            data = $.extend({
+                cache: false,
+                dataType: 'json',
+            }, data || {});
+            return $.ajax(path, data);
+        },
         getJSON : $.getJSON,
         each : $.each,
         formatPath : function(s) {
