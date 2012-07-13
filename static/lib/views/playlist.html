@@ -42,6 +42,13 @@
                 <input type='button' value='Cancel' data-bind='click: function() {$root.playlistVM.newPlaylist(false)}'/>
             </form>
         </div>
+        <label>Repeat 
+            <input type='checkbox' data-bind='checked: $root.playlistVM.playlist.repeat'>
+        </label>
+        <label>Random 
+            <input type='checkbox' data-bind='checked: $root.playlistVM.playlist.random'>
+        </label>
+        <br>
         <a href='#' data-bind='click: $root.playlistVM.playlist.clear'>Clear</a>
     </div>
 </div>

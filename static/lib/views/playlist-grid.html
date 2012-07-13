@@ -26,7 +26,7 @@
             }, 
             event: {
                 click: function(data, event) { $root.playlistVM.selection.click(event, $index()) },
-                dblclick: function(){$root.playlistVM.playlist.play( $data )},
+                dblclick: function(){$root.playlistVM.playlist.play( $data, true )},
                 dragstart: function(data, event){$root.playlistVM.dragStart(event, data); return true},
             }">
             <td data-bind="text: trackNo"></td>

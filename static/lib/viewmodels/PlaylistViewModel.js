@@ -157,7 +157,7 @@ window.PlaylistViewModel = function() {
                 
                 case 13: // enter
                 case 32: // space
-                    self.playlist.playIndex(sel.cursor);
+                    self.playlist.playIndex(sel.cursor, true);
                     handled = true;
                     break;
             }

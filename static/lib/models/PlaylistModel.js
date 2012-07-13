@@ -11,7 +11,8 @@
         if (object instanceof SongModel) {
                 object.playlistData = { 
                     selected: ko.observable(false),
-                    playing: ko.observable(false)
+                    playing: ko.observable(false),
+                    played: ko.observable(false)
                 }
             } 
         },
@@ -123,21 +124,36 @@
         });
 
         
-        this.play = function(s) {
+        /**
+         * Removes the 'played' flag from each item on the playlist.
+         * Call this when the playlist is altered in some way by
+         * user interaction
+         */
+        this.resetPlayed = function() {
+            ko.utils.arrayForEach(self.songs(), function(item) {
+                item.playlistData.played(false);
+            });
+        }
+        
+        this.play = function(s, reset) {
             var currentSong = self.currentSong();
-            if (s) {
+            if (reset) {
+                self.resetPlayed();
+            }
+            if (s instanceof SongModel) {
                 s.playlistData.playing(true);
                 if (currentSong)
                     currentSong.playlistData.playing(false);
                 self.currentSong(s);
+                s.playlistData.played(true);
             }
             self.playing(true);
             self.paused(false);
             audioElement.play();
         }
-        this.playIndex = function(index) {
+        this.playIndex = function(index, reset) {
             var s = self.songs()[index];
-            if (s) self.play(s);
+            if (s) self.play(s, reset);
         }
         this.stop = function() {
             self.playing(false);
@@ -148,15 +164,44 @@
         }
         
         this.next = function() {
-            var index = self.currentIndex(), nextIndex, nextSong;
+            var index = self.currentIndex(), nextIndex, nextSong, remaining;
             nextIndex = index + 1;
-            // TODO random
-            console.log('next', index);
+            if (self.repeat() && self.songs().length) {
+                nextIndex = nextIndex % self.songs().length;
+            }
+            
+            if (self.random()) {
+                remaining = ko.utils.arrayFilter(self.songs(), function(item) {
+                    return !item.playlistData.played();
+                });
+                if (!remaining.length) {
+                    // remove the played tag from all songs
+                    if (self.repeat()) {
+                        ko.utils.arrayForEach(self.songs(), function(item) {
+                            item.playlistData.played(false);
+                        });
+                        remaining = self.songs();
+                    }
+                }
+                nextIndex = Math.floor(Math.random() * remaining.length);
+                nextSong = remaining[nextIndex];
+                if (nextSong) {
+                    nextIndex = self.songs().indexOf(nextSong);
+                }
+                else {
+                    // nothing left
+                    self.stop();
+                    return;
+                }
+            }
+            
             if (index > -1) {
                 nextSong = self.songs()[nextIndex];
                 if (nextSong)
                     self.play(nextSong);
-                else self.stop();
+                else {
+                    self.stop();
+                }
             }
         }
         
@@ -182,6 +227,7 @@
         }
         
         this.add = function(object, autoplay) {
+            self.resetPlayed();
             if (typeof autoplay === 'undefined') autoplay = true;
             // we only deal with songs so if it's a container (i.e. an artist or
             // album) then we'll recurse down to songs
@@ -338,5 +384,11 @@
                 }
             });
         }
+        
+        
+        
+        
+        self.random.subscribe(self.resetPlayed);
+        self.repeat.subscribe(self.resetPlayed);
     }
 }());
