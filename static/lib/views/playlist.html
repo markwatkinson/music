@@ -64,11 +64,8 @@
 </div>
 
 <div class='grid-container'>
-    <!-- because CSS is stupid, to get a scrollable table and keep the widths nice
-        , we have to set up two identical tables, one with a hidden thead and one with a hidden
-        tbody. -->
-    <div class='header' data-bind='template: "playlist-grid"'></div>
-    <div class='body' data-bind='template: "playlist-grid",
+
+    <div class='' data-bind='template: "playlist-grid",
         style: {height: $root.screenVM.playlistGridHeight() + "px"}
     '></div>
     

@@ -22,7 +22,8 @@
             draggable='true'
             data-bind="css: {
                 current : playlistData.playing(),
-                selected: playlistData.selected()
+                selected: playlistData.selected(),
+                played: playlistData.played()
             }, 
             event: {
                 click: function(data, event) { $root.playlistVM.selection.click(event, $index()) },

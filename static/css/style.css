@@ -130,11 +130,17 @@ html {
     cursor: default;
 }
 
+.playlist .played {
+    color: #777;
+}
+
 .playlist .selected {
     background-color: #BFD9FF;
+    color: #000;
 }
 .playlist .current {
     background-color: #80B3FF;
+    color: #fff;
 }
 
 .playlist {

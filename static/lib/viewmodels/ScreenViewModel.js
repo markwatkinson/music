@@ -42,8 +42,7 @@
             self.treeHeight(0);
             
             self.playlistGridHeight( 
-                self.appHeight() - 
-                $('.playlist .grid-container > .body').offset().top
+                self.appHeight() /*- $('.playlist .grid-container > .body').offset().top */
             );
         }
         $(window).resize(resize);
