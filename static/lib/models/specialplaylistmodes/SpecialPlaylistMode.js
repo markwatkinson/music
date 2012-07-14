@@ -50,32 +50,33 @@ window.SpecialPlaylistModeDynamicRandom = function(collection, playlist) {
         self.songSubscription = self.playlist.currentIndex.subscribe(self.subscribeFunc);
     }
     
-    this.subscribeFunc = function(newIndex) {
+    this.subscribeFunc = function(currentPos) {
+        var currentLength = self.playlist.songs().length,
+            fromEnd = currentLength - currentPos,
+            threshhold = self.songsPerPlaylist/2,
+            toAdd;
+        if (fromEnd >= threshhold) {
+            return;
+        }
         
-        var diff = self.songsPerPlaylist/2 - newIndex -1,
-            remove = diff < 0,
-            songs;
-        console.log('diff', diff, self.lock);
-            
-        if (!remove) return;
         if (self.lock) return;
         self.lock = true;
         if (self.songSubscription !== null) {
             self.songSubscription.dispose();
         }
-        if (newIndex < 0) {
-            newIndex = 0;
-        }
-        diff *= -1;
 
-        self.collection.getRandomSongs(diff, function(songs_) {
+        toAdd = -1 * (fromEnd - threshhold);
+        console.log('adding', toAdd);
+
+        self.collection.getRandomSongs(toAdd, function(songs_) {
+            var songs, newLength = currentLength + toAdd;
             songs = self.playlist.songs();
-            songs = songs.slice(diff);
+            if (newLength > self.songsPerPlaylist)
+                songs = songs.slice(newLength - self.songsPerPlaylist);
             self.playlist.songs(songs);
             ko.utils.arrayForEach(songs_, function(s) {
                 self.playlist.add(s);
             });
-            
             self.lock = false;
             self.reSubscribe();
             
