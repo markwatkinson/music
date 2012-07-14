@@ -234,12 +234,8 @@
                     self.addAlbum(a_);
             });
         }
-        
-        this.add = function(object, autoplay) {
-            self.resetPlayed();
-            if (typeof autoplay === 'undefined') autoplay = true;
-            // we only deal with songs so if it's a container (i.e. an artist or
-            // album) then we'll recurse down to songs
+        // try not to use this directly - see add
+        this.addGeneric = function(object) {
             if (object instanceof SongModel) {
                 self.addSong(object);
             } else if (object instanceof AlbumModel) {
@@ -248,6 +244,24 @@
                 self.addArtist(object);
             } else {
                 debugger;
+            }
+        }
+        
+        
+        
+        
+        this.add = function(object, autoplay) {
+            self.resetPlayed();
+            if (typeof autoplay === 'undefined') autoplay = true;
+            // we only deal with songs so if it's a container (i.e. an artist or
+            // album) then we'll recurse down to songs
+            if (object instanceof Array) {
+                ko.utils.arrayForEach(object, function(item) {
+                    self.addGeneric(item);
+                });
+            }
+            else {
+                self.addGeneric(object);
             }
             this.save();
         }

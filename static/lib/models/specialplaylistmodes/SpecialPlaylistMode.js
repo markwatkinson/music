@@ -74,9 +74,7 @@ window.SpecialPlaylistModeDynamicRandom = function(collection, playlist) {
             if (newLength > self.songsPerPlaylist)
                 songs = songs.slice(newLength - self.songsPerPlaylist);
             self.playlist.songs(songs);
-            ko.utils.arrayForEach(songs_, function(s) {
-                self.playlist.add(s);
-            });
+            self.playlist.add(songs_);
             self.lock = false;
             self.reSubscribe();
             
