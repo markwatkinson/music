@@ -58,11 +58,14 @@ window.SpecialPlaylistModeDynamicRandom = function(collection, playlist) {
         var currentLength = self.playlist.songs().length,
             fromEnd = currentLength - currentPos,
             threshhold = self.songsPerPlaylist/2,
-            toAdd;
+            toAdd, i, songs;
+        songs = self.playlist.songs();
+        for (i=0; i<currentPos; i++) {
+            songs[i].playlistData.played(true);
+        }
         if (fromEnd >= threshhold) {
             return;
         }
-        
         if (self.lock) return;
         self.lock = true;
         if (self.songSubscription !== null) {
