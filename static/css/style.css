@@ -142,6 +142,10 @@ html {
     background-color: #80B3FF;
     color: #fff;
 }
+.playlist .grid td {
+    white-space: nowrap;
+    overflow: hidden;
+}
 
 .playlist {
     -webkit-touch-callout: none;
