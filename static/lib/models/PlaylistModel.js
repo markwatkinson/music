@@ -263,7 +263,7 @@
             else {
                 self.addGeneric(object);
             }
-            this.save();
+            self.save();
         }
         
         this.clear = function() {
