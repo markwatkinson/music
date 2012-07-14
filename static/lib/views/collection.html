@@ -6,6 +6,7 @@
 <div class='tree-container'
     data-bind="style: {height: $root.screenVM.treeHeight() + 'px'}"
     >
+    Special playlists:
     <ul class='special' data-bind='foreach: $root.collectionVM.specialPlaylists'>
         <li draggable='true' 
             data-bind='text: name,

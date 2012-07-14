@@ -28,6 +28,15 @@ html {
     list-style: none;
     padding: 0;
 }
+.collection .special {
+    margin-bottom: 1em;
+    border-bottom: 1px solid #bbb;
+}
+.collection .special li {
+    background-image: none!important;
+    cursor: default;
+}
+
 .collection li {
     padding-left: 12px;
     background: url(/static/assets/icons/arrow-down.png) 0 2px no-repeat;
