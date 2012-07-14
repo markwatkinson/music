@@ -198,6 +198,7 @@ window.PlaylistViewModel = function() {
         var $e = $(formElement);
         var name = $e.find('input[type=text]').val();
         ignorePlaylistSelectChanges = true;
+        self.playlist.cancelSpecial();
         self.knownPlaylists.push(name);
 
         self.playlist.save(name);

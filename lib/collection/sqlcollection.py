@@ -76,6 +76,20 @@ class SQLCollection(Collection):
         c.cursor().executescript(query)
         self.close()
 
+    def random_song(self, number=20):
+        query = '''
+            SELECT * FROM songs 
+            INNER JOIN albums ON album_id = song_album
+            INNER JOIN artists ON artist_id = album_artist
+            ORDER BY RANDOM() LIMIT ?
+        '''
+        c = self.__connect()
+        cu = c.cursor()
+        cu.execute(query, (number,))
+        r = self.__build_result(cu)
+        self.close()
+        return r
+
 
     def get(self, artist=None, album=None, song=None):
         print artist, album, song

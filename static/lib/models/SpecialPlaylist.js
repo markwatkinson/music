@@ -36,3 +36,32 @@ window.AllTracksPlaylistModel = function() {
 AllTracksPlaylistModel.prototype = new SpecialPlaylistModel();
 
 AllTracksPlaylistModel.prototype.constructor = AllTracksPlaylistModel
+
+
+window.DyanimicRandomPlaylistModel = function() {
+    
+    SpecialPlaylistModel.call(this, {
+        'id' : 'all',
+        'name' : 'Dynamic random'
+    });
+    
+    this.setup = function() {
+         music.root.playlistVM.playlist.special( 
+            new SpecialPlaylistModeDynamicRandom(
+                music.root.collectionVM,
+                music.root.playlistVM.playlist
+            )
+        );
+        music.root.playlistVM.playlist.special().start();
+    }
+    
+    this.dragFunc = function(action) {
+       this.setup();
+    }
+    
+    this.click = this.setup;
+};
+
+DyanimicRandomPlaylistModel.prototype = new SpecialPlaylistModel();
+
+DyanimicRandomPlaylistModel.prototype.constructor = DyanimicRandomPlaylistModel

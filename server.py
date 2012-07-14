@@ -36,12 +36,24 @@ def get(artist=None, album=None, song=None):
 # TODO support individual artist/album/song fields
 @app.route('/gets/', methods=['POST'])
 def gets():
-    uids = json.loads(request.form.get('uids', '[]'))
+    uids = request.form.get('uids', None)
     c = sqlcollection.SQLCollection()
-    for uid in uids:
-        s = uid.split('/')
-        c.get(*s)
-    return jsonencoder.encode_artists(c.artists)
+    if uids:
+        for uid in json.loads(uids):
+            s = uid.split('/')
+            c.get(*s)
+        return jsonencoder.encode_artists(c.artists)
+    
+    random = request.form.get('random', False)
+    # random songs
+    if random:
+        number = json.loads(request.form.get('number', '20'))
+        c.random_song(number)
+        return jsonencoder.encode_artists(c.artists)
+    
+    else:
+        print 'unhandled post request'
+        print request.form.keys()
     
     
 def transcode(song):

@@ -84,6 +84,11 @@
         
         this.currentSong = ko.observable();
         
+        this.saveQueued = ko.observable(false);
+        
+        this.special = ko.observable();
+        
+        
         this.sortBy = ko.computed({
             read: function() { return sortByField; },
             write: function(field) {
@@ -157,6 +162,8 @@
         }
         this.stop = function() {
             self.playing(false);
+            self.currentSong(null);
+            audioElement.pause();
         }
         this.pause = function() {
             self.paused(true);
@@ -195,14 +202,16 @@
                 }
             }
             
-            if (index > -1) {
+            //if (index > -1) {
                 nextSong = self.songs()[nextIndex];
                 if (nextSong)
                     self.play(nextSong);
                 else {
                     self.stop();
                 }
-            }
+            //} else {
+            //    self.stop();
+            //}
         }
         
         
@@ -292,13 +301,15 @@
         
         this.save = function(name) {
             var path;
+            
+            if (!this.special().savable) {
+                // no saving some special playlists
+                console.log('no saving special playlist');
+                return;
+            }
             // queue the save operation
             if (self.syncing()) {
-                console.log('queueing save');
-                var s = self.syncing.subscribe(function(newVal) {
-                    if (!newVal) self.save();
-                    s.dispose();
-                });
+                self.saveQueued(true);
                 return;
             }
             self.syncing(true);
@@ -313,6 +324,7 @@
         }
         
         this.load = function(name) {
+            self.cancelSpecial();
             // loads from the server
             // TODO name shouldn't have to be pre-set but putting it as an arg
             // breaks things with the way the template calls this func.
@@ -386,9 +398,44 @@
         }
         
         
+        this.toJSON = function() {
+            var ret = {}, property;
+            for (property in this) {
+                // special is recursive
+                if (this.hasOwnProperty(property) && property != 'special') {
+                    ret[property] = this[property];
+                }
+            }
+            return ret;
+        }
+        
+        
+        self.cancelSpecial = function() {
+            var s = new SpecialPlaylistModeDefault(music.root.collectionVM, self),
+                c = self.special();
+            if (c)
+                self.special().stop();
+            self.special(s);
+        }
+        
+        self.isSpecial = function() {
+            return !(self.special() instanceof SpecialPlaylistModeDefault);
+        }
+        
+        self.cancelSpecial();
         
         
         self.random.subscribe(self.resetPlayed);
         self.repeat.subscribe(self.resetPlayed);
+        
+        self.syncing.subscribe(function(val) {
+            if (!val) {
+                if (self.saveQueued()) {
+                    self.saveQueued(false);
+                    self.save();
+                }
+            }
+        });
+        
     }
 }());

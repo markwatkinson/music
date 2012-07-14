@@ -102,10 +102,13 @@ var music;
     
     // root viewmodel defn
     var ViewModel = function() {
-        this.collectionVM = new CollectionViewModel();
-        this.collectionVM.load();
-        this.playlistVM = new PlaylistViewModel();
-        this.screenVM = new ScreenViewModel();
+        
+        this.setup = function() {
+            this.collectionVM = new CollectionViewModel();
+            this.collectionVM.load();
+            this.playlistVM = new PlaylistViewModel();
+            this.screenVM = new ScreenViewModel();
+        }
     };
     
     
@@ -129,6 +132,7 @@ var music;
     
     function setup() {
         music.root = new ViewModel();
+        music.root.setup();
         ko.applyBindings(music.root);
         music.root.screenVM.refresh();
         

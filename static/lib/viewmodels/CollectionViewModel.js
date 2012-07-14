@@ -18,6 +18,7 @@ window.CollectionViewModel = function() {
     this.specialPlaylists = [
         // Knockout is too slow to deal with this so disable it for now
         //new AllTracksPlaylistModel({id: 'all', name: 'All tracks'})
+        new DyanimicRandomPlaylistModel()
     ]
     
     
@@ -125,6 +126,38 @@ window.CollectionViewModel = function() {
                 return a.name().toLowerCase().localeCompare(b.name().toLowerCase());
             });
             self.artists(self.collection);
+        });
+    }
+    
+    this.getRandomSongs = function(number, action) {
+        // NOTE we aren't merging the results into the tree because
+        // I'm not sure there's a case where having a half-built node is
+        // actually useful - if anyone expands it we want it to be full.
+        music.utils.ajax('/gets/', {
+            data: {random: true, number: number}, 
+            type: 'post',
+            success: function(data) {
+                var songs = [];
+                console.log('random songs', data);
+                ko.utils.arrayForEach(data.artists, function(item) {
+                    var artist = new ArtistModel(item);
+                    ko.utils.arrayForEach(item.albums, function(item) {
+                        var album = new AlbumModel(item) 
+                        
+                        ko.utils.arrayForEach(item.songs, function(item) {
+                            var s = new SongModel(item);
+                            album.addSong(s);
+                            songs.push(s);
+                        });
+                        artist.addAlbum(album);
+                    });
+                    
+                });
+                action(songs);
+            },
+            error : function() {
+                action([]);
+            }
         });
     }
 

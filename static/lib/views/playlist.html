@@ -27,7 +27,10 @@
     <!-- /ko -->
     <div class='playlist-controls'>
         <div>
-            <label data-bind='visible: $root.playlistVM.knownPlaylists().length'> Playlist: 
+            <label data-bind='
+                visible: $root.playlistVM.knownPlaylists().length &amp;&amp;
+                    !$root.playlistVM.playlist.isSpecial()
+            '> Playlist: 
             <select data-bind='options: $root.playlistVM.knownPlaylists,
                 value: $root.playlistVM.playlist.name,
                 event: { change : function($data, event) { $root.playlistVM.selectPlaylistChange(event) } }
@@ -42,10 +45,17 @@
                 <input type='button' value='Cancel' data-bind='click: function() {$root.playlistVM.newPlaylist(false)}'/>
             </form>
         </div>
-        <label>Repeat 
+        
+        <!-- ko if: $root.playlistVM.playlist.special().explicitCancel -->
+            <span> Special playlist: <span data-bind='text: $root.playlistVM.playlist.special().description'></span>
+                <a href='#' data-bind='click: $root.playlistVM.playlist.cancelSpecial'>cancel</a>.
+            </span>
+        <!-- /ko -->
+        
+        <label data-bind='visible: $root.playlistVM.playlist.special().repeatable'>Repeat 
             <input type='checkbox' data-bind='checked: $root.playlistVM.playlist.repeat'>
         </label>
-        <label>Random 
+        <label data-bind='visible: $root.playlistVM.playlist.special().randomable'>Random 
             <input type='checkbox' data-bind='checked: $root.playlistVM.playlist.random'>
         </label>
         <br>
