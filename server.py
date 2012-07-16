@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 from flask import Flask, render_template, make_response, abort, send_file, request
 
@@ -156,6 +157,8 @@ def art(artist, album, song=None):
     im.save(tmpdir + tmpref, 'JPEG', quality=100)
     return send_file(tmpdir + tmpref)
 
+def valid_playlist_name(name):
+    return re.match('^[a-zA-Z0-9_\- ]', name) is not None
 
 @app.route('/playlist/save/', methods=['POST'])
 def playlist_save():
@@ -167,6 +170,7 @@ def playlist_save():
     playlist_json = request.form.get('playlist', None)
     playlist_name = request.form.get('name', None)
     if not playlist_json or not playlist_name: abort(400)
+    if not valid_playlist_name(playlist_name): abort(400)
     path = appdir('persistent/playlists/' + playlist_name + '.json')
     with open(path, 'w') as f:
         f.write(playlist_json.encode('utf-8'))
@@ -177,6 +181,8 @@ def playlist_save():
 def playlist_get(name=None):
     if name is not None:
         try:
+            if not valid_playlist_name(name):
+                raise Exception
             return send_file(appdir('persistent/playlists/' + name + '.json'))
         except:
             abort(404)
