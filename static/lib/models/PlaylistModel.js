@@ -93,6 +93,9 @@
             read: function() { return sortByField; },
             write: function(field) {
                 var cmp = comparators[field], lastField = sortByField;
+                if (!self.special().sortable) {
+                    return;
+                }
                 if (cmp) {
                     if (lastField === field) { self.songs.reverse(); }
                     else { self.songs.sort(cmp); }

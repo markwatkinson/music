@@ -8,6 +8,7 @@ window.SpecialPlaylistMode = function(collection, playlist) {
     this.repeatable = true;
     this.savable = true;
     this.explicitCancel = false;
+    this.sortable = true;
     
     this.active = false;
     
@@ -48,6 +49,7 @@ window.SpecialPlaylistModeDynamicRandom = function(collection, playlist) {
     this.savable = false;
     this.repeatable = false;
     this.randomable = false;
+    this.sortable = false;
     this.explicitCancel = true;
     
     this.reSubscribe = function() {
