@@ -58,12 +58,13 @@ ArtistModel.prototype.loadChildren = function(complete) {
     }
     if (this.loading) return;
     
+    
     music.utils.getJSON(path, function(data) {
         var waiting = 0, fetched=0;
         if (!data.artists || !data.artists.length || !data.artists[0].albums) {
             return;
         }
-        
+        self.albums([]);
         music.utils.each(data.artists[0].albums, function(i, albumData) {
             var title = albumData.title, 
                 index = music.utils.search(self.albums(), function(a) {

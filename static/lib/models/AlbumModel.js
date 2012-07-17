@@ -64,7 +64,7 @@ AlbumModel.prototype.loadChildren = function(complete) {
             return;
         if (!data.artists[0].albums.length) 
             return;
-        
+        self.songs([]);
         music.utils.each(data.artists[0].albums[0].songs, function(i, songData) {
             var title = songData.title,
                 index = music.utils.search(self.songs(), function(s) {
