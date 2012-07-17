@@ -36,13 +36,14 @@
             }
         });
         var resize = function() {
-            var h = $(window).height();
+            var h = $(window).height(), offset;
             self.height(h);
             self.width($(window).width());
             self.treeHeight(0);
             
+            offset = $('.playlist .grid-container > div').position();
             self.playlistGridHeight( 
-                self.appHeight() /*- $('.playlist .grid-container > .body').offset().top */
+                self.appHeight() - (offset? offset.top : 0)
             );
         }
         $(window).resize(resize);
