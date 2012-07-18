@@ -158,7 +158,7 @@ def art(artist, album, song=None):
     return send_file(tmpdir + tmpref)
 
 def valid_playlist_name(name):
-    return re.match('^[a-zA-Z0-9_\- ]', name) is not None
+    return re.match('^[a-zA-Z0-9_\- ]+$', name) is not None
 
 @app.route('/playlist/save/', methods=['POST'])
 def playlist_save():
