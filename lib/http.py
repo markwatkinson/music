@@ -1,8 +1,8 @@
+import mimetypes
+import os
 import re
 
 from flask import request, send_file, Response
-import os
-import mimetypes
 
 def send_file_partial(path):
     """ 
