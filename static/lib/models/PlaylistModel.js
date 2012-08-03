@@ -476,5 +476,17 @@
             }
         });
         
+        
+        self.seekPretty = function() {
+            var s_ = Math.round(self.seekPos());
+            var m, s;
+            m = "" + (Math.floor(s_ / 60));
+            s = "" + (s_ % 60);
+            while (m.length < 2) m = "0" + m;
+            while (s.length < 2) s = "0" + s;
+            return m + ":" + s;
+        }
+        
+        
     }
 }());

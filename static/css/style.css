@@ -130,6 +130,12 @@ html {
     cursor: default;
 }
 
+.playlist .grid th,
+.playlist .grid td
+{
+    text-align: left;
+}
+
 .playlist .played {
     color: #777;
 }
@@ -159,18 +165,29 @@ html {
 
 .playlist .bar { 
     position: relative;
-    min-height: 100px;
 }
 
+.playlist .bottom-bar {
+    position: fixed;
+    min-height: 100px;
+    bottom: 0;
+    background: #353535;
+    border-radius: 1em 1em 0 0;
+    overflow: hidden;
+    color: #fff;
+}
 .playlist .now-playing {
     position: absolute;
     right: 0;
-    top: 0;
+    border-top-right-radius: 1em;
+    bottom: 0;
     padding-right: 100px;
     background-repeat: no-repeat;
     background-position: right center;
     min-height: 100px;
-    
+}
+.playlist .now-playing img {
+    border: 1px solid #fff;
 }
 .playlist .now-playing::before {
     content: "Now playing:";
@@ -216,8 +233,19 @@ html {
     overflow: auto;
 }
 
+.seek-container {
+    vertical-align: top;
+}
 
-.volume-container span {
-    min-width: 4em;
-    display: inline-block;
+.seek-container #seekbar {
+    vertical-align: middle;
+    min-width: 200px;
+}
+
+.volume-container {
+    vertical-align: top;
+}
+
+.volume-container #volumebar {
+    vertical-align: middle;
 }

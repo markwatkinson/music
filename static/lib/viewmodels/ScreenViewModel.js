@@ -15,7 +15,7 @@
         
         this.playlistPanelWidth = ko.computed(function() {
             var width = self.width();
-            return $('.app-container').width() - $('.collection').outerWidth(true);
+            return $('.app-container').width() - $('.collection').outerWidth(true) - 10;
         });
         
         this.playlistGridHeight = ko.observable(0);
@@ -35,23 +35,32 @@
                 // dummy
             }
         });
+        
+        
+        function height() {
+            var offset = $('.playlist .grid-container > div').position();
+            var $bar = $('.bottom-bar');
+            
+            self.playlistGridHeight( 
+                self.appHeight() - (offset? offset.top : 0) - $bar.outerHeight()
+            );
+        }
+        
+        
         var resize = function() {
-            var h = $(window).height(), offset;
+            var h = $(window).height();
             self.height(h);
             self.width($(window).width());
             self.treeHeight(0);
             
-            offset = $('.playlist .grid-container > div').position();
-            self.playlistGridHeight( 
-                self.appHeight() - (offset? offset.top : 0)
-            );
+            height();
         }
         $(window).resize(resize);
         
         this.refresh = function() {
             resize();
         };
-        
+
 
     }
 }(jQuery));

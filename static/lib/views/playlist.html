@@ -1,38 +1,4 @@
 <div class='bar'>
-    <div class='playback-controls'>
-    
-        <div class='volume-container'>
-            <span data-bind="text: $root.playlistVM.playlist.volume() + '%'"></span>
-            <input type="range" step="1" id="volumebar" min=0 max=100 data-bind="value: $root.playlistVM.playlist.volume"></input>
-        </div>
-        <a href='#' class='control'
-        data-bind="text: $root.playlistVM.controls.playOrPauseText,
-            click: $root.playlistVM.controls.playOrPauseClick,
-            css : {
-                'play' : $root.playlistVM.state() !== $root.playlistVM.playStates.PLAYING,
-                'pause': $root.playlistVM.state() === $root.playlistVM.playStates.PLAYING
-            }
-        "></a>
-        <a href='#' data-bind="click: $root.playlistVM.playlist.stop" class='control stop'>Stop</a>
-        <a href='#' data-bind="click: $root.playlistVM.playlist.next" class='control next'>Next</a>
-        
-        
-        <input type="range" step="any" id="seekbar" min=0 data-bind="attr: {max: $root.playlistVM.playlist.currentSongLength()},
-            value: $root.playlistVM.playlist.seekPos"></input>
-    
-            
-    </div>
-
-    <!-- ko if: $root.playlistVM.playlist.currentSong() -->
-    <div class='now-playing' data-bind='
-        visible: $root.playlistVM.playlist.currentSong(),
-        style: { backgroundImage: "url(/art/" + $root.playlistVM.playlist.currentSong().path() + "?s=96)" }'
-    >
-        <span class='title song-title' data-bind='text: $root.playlistVM.playlist.currentSong().title'></span>
-        <span class='title artist-name' data-bind='text: $root.playlistVM.playlist.currentSong().album.artist.name'></span>
-        <span class='title album-title' data-bind='text: $root.playlistVM.playlist.currentSong().album.title'></span>
-    </div>
-    <!-- /ko -->
     <div class='playlist-controls'>
         <div>
             <label data-bind='
@@ -59,15 +25,57 @@
                 <a href='#' data-bind='click: $root.playlistVM.playlist.cancelSpecial'>cancel</a>.
             </span>
         <!-- /ko -->
-        
-        <label data-bind='visible: $root.playlistVM.playlist.special().repeatable'>Repeat 
-            <input type='checkbox' data-bind='checked: $root.playlistVM.playlist.repeat'>
-        </label>
-        <label data-bind='visible: $root.playlistVM.playlist.special().randomable'>Random 
-            <input type='checkbox' data-bind='checked: $root.playlistVM.playlist.random'>
-        </label>
-        <br>
-        <a href='#' data-bind='click: $root.playlistVM.playlist.clear'>Clear</a>
+            <label data-bind='visible: $root.playlistVM.playlist.special().repeatable'>Repeat 
+                <input type='checkbox' data-bind='checked: $root.playlistVM.playlist.repeat'>
+            </label>
+            <label data-bind='visible: $root.playlistVM.playlist.special().randomable'>Random 
+                <input type='checkbox' data-bind='checked: $root.playlistVM.playlist.random'>
+            </label>
+            <br>
+            <a href='#' data-bind='click: $root.playlistVM.playlist.clear'>Clear</a>        
+    </div>
+    
+    <div class='bottom-bar' data-bind='style: {width: $root.screenVM.playlistPanelWidth() + "px" }'>
+        <div class='playback-controls'>    
+           
+
+            <a href='#' class='control'
+            data-bind="text: $root.playlistVM.controls.playOrPauseText,
+                click: $root.playlistVM.controls.playOrPauseClick,
+                css : {
+                    'play' : $root.playlistVM.state() !== $root.playlistVM.playStates.PLAYING,
+                    'pause': $root.playlistVM.state() === $root.playlistVM.playStates.PLAYING
+                }
+            "></a>
+            <a href='#' data-bind="click: $root.playlistVM.playlist.stop" class='control stop'>Stop</a>
+            <a href='#' data-bind="click: $root.playlistVM.playlist.next" class='control next'>Next</a>
+
+            <div class='volume-container'>
+                <label>
+                    Volume:
+                    <input type="range" step="1" id="volumebar" min=0 max=100 data-bind="value: $root.playlistVM.playlist.volume"></input>
+                    <span data-bind="text: $root.playlistVM.playlist.volume() + '%'"></span>
+                </label>
+            </div>
+            
+            <div class='seek-container'>
+                <input type="range" step="any" id="seekbar" min=0 data-bind="attr: {max: $root.playlistVM.playlist.currentSongLength()},
+                    value: $root.playlistVM.playlist.seekPos"></input>
+                <span data-bind='text: $root.playlistVM.playlist.seekPretty()'></span>
+            </div>        
+                
+        </div>
+
+        <!-- ko if: $root.playlistVM.playlist.currentSong() -->
+        <div class='now-playing' data-bind='
+            visible: $root.playlistVM.playlist.currentSong(),
+            style: { backgroundImage: "url(/art/" + $root.playlistVM.playlist.currentSong().path() + "?s=96)" }'
+        >
+            <span class='title song-title' data-bind='text: $root.playlistVM.playlist.currentSong().title'></span>
+            <span class='title artist-name' data-bind='text: $root.playlistVM.playlist.currentSong().album.artist.name'></span>
+            <span class='title album-title' data-bind='text: $root.playlistVM.playlist.currentSong().album.title'></span>
+        </div>
+        <!-- /ko -->
     </div>
 </div>
 
