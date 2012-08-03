@@ -2,10 +2,11 @@ import json
 import os
 import re
 
-from flask import Flask, render_template, make_response, abort, send_file, request
+from flask import Flask, render_template, make_response, abort, request
 
 from lib.collection import sqlcollection, fscollection
 from lib import jsonencoder
+from lib.http import send_file_partial
 
 
 app = Flask(__name__)
@@ -96,6 +97,7 @@ def play(artist, album, song):
     """ Send the specified song """
     c = sqlcollection.SQLCollection()
     a = c.get(artist, album, song)
+    print 'Play!'
     try:
         album = a[0].get('albums')[0]
         song = album.get('songs')[0]
@@ -104,7 +106,7 @@ def play(artist, album, song):
             print 'transcoding'
             transcode(song)
             print 'transcoded'
-            return send_file(song.get('filepath'))
+            return send_file_partial(song.get('filepath'))
         except Exception as e:
             raise
             print str(e)
@@ -144,7 +146,7 @@ def art(artist, album, song=None):
         os.mkdir(tmpdir)
         
     if os.path.exists(tmpdir + tmpref): 
-        return send_file(tmpdir + tmpref)
+        return send_file_partial(tmpdir + tmpref)
         
     if not artpath:
         tmpref = 'unknown_' + str(size) + '.jpg'
@@ -155,7 +157,7 @@ def art(artist, album, song=None):
     sizetuple = size, size
     im.thumbnail(sizetuple, Image.ANTIALIAS)
     im.save(tmpdir + tmpref, 'JPEG', quality=100)
-    return send_file(tmpdir + tmpref)
+    return send_file_partial(tmpdir + tmpref)
 
 def valid_playlist_name(name):
     return re.match('^[a-zA-Z0-9_\- ]+$', name) is not None
@@ -183,7 +185,7 @@ def playlist_get(name=None):
         try:
             if not valid_playlist_name(name):
                 raise Exception
-            return send_file(appdir('persistent/playlists/' + name + '.json'))
+            return send_file_partial(appdir('persistent/playlists/' + name + '.json'))
         except:
             abort(404)
     else:
@@ -208,5 +210,10 @@ def rescan():
     c2.write()
     return 'ok'
 
+@app.after_request
+def after_request(response):
+    response.headers.add('Accept-Ranges', 'bytes')
+    return response
+    
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

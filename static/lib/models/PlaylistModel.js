@@ -80,6 +80,7 @@
         this.playing = ko.observable(false);
         this.paused = ko.observable(false);
         
+        this.seekSemaphore = false;
         this.seekPos = ko.observable(0);
         
         this.currentSong = ko.observable();
@@ -297,8 +298,10 @@
             if (!self.playing()) return;
 
             currentSong = self.currentSong();
-            
+            if (this.seekSemaphore) return;
+            self.seekSemaphore = true;
             self.seekPos(audioElement.currentTime);
+            self.seekSemaphore = false;
             
             
             // for some reason Chrome isn't firing the ended event, 
@@ -309,12 +312,22 @@
             // starts handling things differently, we have to look at the 
             // song's metadata and hope it was correct
             // This is risky because song metadata can be wrong.
-            if (audioElement.ended || !currentSong || 
-                    self.seekPos() >= self.currentSong().length()) {
-                self.next();
-            }
+//             if (audioElement.ended || !currentSong || 
+//                     self.seekPos() >= self.currentSong().length()) {
+//                 self.next();
+//             }
         }, 500);
         
+        audioElement.addEventListener("ended", function() {
+            console.log('ended fired');
+            self.next();
+        }, false);
+        
+        this.seekPos.subscribe(function(val) {
+            if (self.seekSemaphore) return;
+            audioElement.currentTime = val;
+        })
+
         
         this.save = function(name) {
             var path;
