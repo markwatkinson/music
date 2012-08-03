@@ -90,6 +90,15 @@
         this.special = ko.observable();
         
         
+        this.volume = ko.observable(50);
+        
+        this.volFunc = function(newVol) {
+            var v = newVol/100;
+            audioElement.volume = Math.max(0, Math.min(1, v));
+        }
+        this.volFunc(this.volume());
+        this.volume.subscribe(self.volFunc);
+        
         this.sortBy = ko.computed({
             read: function() { return sortByField; },
             write: function(field) {

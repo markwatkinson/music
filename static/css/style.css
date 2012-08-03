@@ -215,3 +215,9 @@ html {
 .playlist .grid-container .body { 
     overflow: auto;
 }
+
+
+.volume-container span {
+    min-width: 4em;
+    display: inline-block;
+}
