@@ -16,9 +16,19 @@ html {
 }
 
 
-.collection input {
+.collection .search-container {
+    position: relative;
+}
+
+.collection .search-container input {
     max-width: 90%;
 }
+.collection a {
+    position: absolute;
+    top: 5px;
+    right: 28px;
+}
+
 .collection .tree-container {
     overflow-y: auto;
     overflow-x: hidden;
