@@ -1,3 +1,4 @@
+import config
 import json
 import os
 import re
@@ -202,7 +203,8 @@ def playlist_get(name=None):
 @app.route('/rescan')
 def rescan():
     """ Fully rescans the collection """
-    c = fscollection.FSCollection('/mnt/storage/music/')
+    
+    c = fscollection.FSCollection(config.collection_path)
     c.build()
     c2 = sqlcollection.SQLCollection()
     c2.empty()    
