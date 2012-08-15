@@ -218,4 +218,11 @@ def after_request(response):
     return response
     
 if __name__ == '__main__':
+
+    paths = ['tmp', 'tmp/art', 'tmp/ogg']
+    for p in paths:
+        try:
+            os.mkdir(appdir(p))
+        except:
+            pass
     app.run(debug=True, host='0.0.0.0')
