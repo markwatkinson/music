@@ -53,7 +53,14 @@
             <div class='volume-container'>
                 <label>
                     Volume:
-                    <input type="range" step="1" id="volumebar" min=0 max=100 data-bind="value: $root.playlistVM.playlist.volume"></input>
+                    <input type="range" step="1" id="volumebar" min=0 max=100
+                        data-bind="
+                            value: $root.playlistVM.playlist.volume,
+                            event: {
+                                mousewheel: $root.playlistVM.volumeMWheel,
+                                DOMMouseScroll: $root.playlistVM.volumeMWheel
+                            }">
+                    </input>
                     <span data-bind="text: $root.playlistVM.playlist.volume() + '%'"></span>
                 </label>
             </div>

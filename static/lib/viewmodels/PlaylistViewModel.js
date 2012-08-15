@@ -206,6 +206,18 @@ window.PlaylistViewModel = function() {
         self.loadPlaylists();
         ignorePlaylistSelectChanges = false;
     }
+
+
+    /**
+     * Mouse wheel binding for the volume control
+     */
+    this.volumeMWheel = function(data, event) {
+        var e = event.originalEvent;
+        // cross browser stuff
+        var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+        var currentV = self.playlist.volume();
+        self.playlist.volume( currentV + (3 * delta) );
+    }
     
     this.loadPlaylists();
     this.playlist.load();
