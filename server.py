@@ -96,17 +96,15 @@ def transcode(song):
 @app.route('/play/<artist>/<album>/<song>/')
 def play(artist, album, song):
     """ Send the specified song """
+    print 'Play!'
     c = sqlcollection.SQLCollection()
     a = c.get(artist, album, song)
-    print 'Play!'
     try:
         album = a[0].get('albums')[0]
         song = album.get('songs')[0]
         
         try:
-            print 'transcoding'
             transcode(song)
-            print 'transcoded'
             return send_file_partial(song.get('filepath'))
         except Exception as e:
             raise

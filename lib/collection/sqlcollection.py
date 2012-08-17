@@ -92,7 +92,6 @@ class SQLCollection(Collection):
 
 
     def get(self, artist=None, album=None, song=None):
-        print artist, album, song
         query = 'SELECT * FROM artists '
         subs = []
         if artist:
@@ -111,7 +110,6 @@ class SQLCollection(Collection):
         cursor.execute(query, tuple(subs))
         r = self.__build_result(cursor)
         self.close()
-        print r
         return r
         
     def search(self, term):
