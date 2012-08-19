@@ -11,6 +11,13 @@ def send_file_partial(path):
         TODO: handle all send_file args, mirror send_file's error handling
         (if it has any)
     """
+    
+    # FIXME this breaks for Chrome. I don't know why. Chrome seems to 
+    # cancel the request and then send another one, but we never see the 
+    # second one. I don't know which part of the stack is to blame but I'm
+    # pretty sure it's not us.
+    # Chromium (18) seems to work though?
+    
     range_header = request.headers.get('Range', None)
     if not range_header: return send_file(path)
     
@@ -22,7 +29,6 @@ def send_file_partial(path):
     
     if g[0]: byte1 = int(g[0])
     if g[1]: byte2 = int(g[1])
-    print 'Range', byte1, byte2
     data = None
     with open(path, 'rb') as f:
         f.seek(byte1)
