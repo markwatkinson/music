@@ -89,15 +89,15 @@
         
         this.special = ko.observable();
 
-        this.volume = ko.observable(50);
-        var _volume_lock = false;
-        this.volume.subscribe(function(newVal) {
-            if (_volume_lock) return;
-            _volume_lock = true;
-            var v = Math.max(0, Math.min(100, newVal));
-            if (v !== newVal) { self.volume(v); }
-            audioElement.volume = Math.max(0, Math.min(1, v/100));
-            _volume_lock = false;
+        //this.volume = ko.observable(50);
+        var _volume = ko.observable(50);
+        this.volume = ko.computed({
+            read: function() { return _volume(); },
+            write: function(newVal) {
+                newVal = Math.max(0, Math.min(100, newVal));
+                _volume(newVal);
+                audioElement.volume = newVal/100;
+            }
         });
         
         this.sortBy = ko.computed({
