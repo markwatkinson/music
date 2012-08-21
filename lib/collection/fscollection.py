@@ -10,15 +10,14 @@ class FSCollection(Collection):
     directories = []
     files = []
     songs = []
-    # supported filetypes, i.e. stuff that we can at least transcode to 
-    # OGG
-    extensions = ['ogg', 'flac']
+    # supported filetypes, this should be set by the caller
+    extensions = ['ogg']
     
     def __init__(self, directories):
         self.directories = [directories] if isinstance(directories, str) else directories
         self.files = []
         self.songs = []
-        self.extensions = ['ogg', 'flac']#, 'mp3', 'wav']
+        self.extensions = ['ogg']
         super(FSCollection, self).__init__()
         
     def __is_supported(self, filename):

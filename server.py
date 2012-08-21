@@ -9,8 +9,17 @@ from lib.collection import sqlcollection, fscollection
 from lib import jsonencoder
 from lib.http import send_file_partial
 
+import subprocess
+
 
 app = Flask(__name__)
+
+
+transcodable_to_ogg = {
+    'mp3' : False,
+    'flac' : False,
+    'ogg' : True,
+}
 
 def appdir(d=''):
     """ Return the directory of a subdir in the project"""
@@ -65,8 +74,8 @@ def transcode(song):
     path = song.get('filepath')
     if path.endswith('.ogg'): return
     if path.endswith('.flac'):
+        assert transcodable_to_ogg['flac']
         # there is a race condition here
-        import subprocess
         newpath = appdir('tmp/ogg/' + song.full_url() + '.ogg')
         song.set_val('filepath', newpath)
         if os.path.exists(newpath): return
@@ -203,6 +212,8 @@ def rescan():
     """ Fully rescans the collection """
     
     c = fscollection.FSCollection(config.collection_path)
+    if transcodable_to_ogg['mp3'] : c.extensions.append('mp3')
+    if transcodable_to_ogg['flac'] : c.extensions.append('flac')
     c.build()
     c2 = sqlcollection.SQLCollection()
     c2.empty()    
@@ -223,4 +234,20 @@ if __name__ == '__main__':
             os.mkdir(appdir(p))
         except:
             pass
+
+    # going to figure out transcoding
+    try:
+        # if we can't transcode to ogg then we might as well give up now
+        subprocess.call(['oggenc'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            transcodable_to_ogg['flac'] = True
+            subprocess.call(['flac'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except OSError:
+            print 'Warning: cannot transcode from FLAC (cannot find flac command)'
+            transcodable_to_ogg['flac'] = False
+    except OSError:
+        print 'Warning: cannot transcode to Ogg (cannot find oggenc command)'
+
+    
+
     app.run(debug=True, host='0.0.0.0')
