@@ -102,6 +102,7 @@ def transcode(song):
         song.set_val('filepath', None)
 
 
+@app.route('/play/<artist>/<album>/<song>')
 @app.route('/play/<artist>/<album>/<song>/')
 def play(artist, album, song):
     """ Send the specified song """
@@ -111,16 +112,16 @@ def play(artist, album, song):
     try:
         album = a[0].get('albums')[0]
         song = album.get('songs')[0]
-        
-        try:
-            transcode(song)
-            return send_file_partial(song.get('filepath'))
-        except Exception as e:
-            raise
-            print str(e)
-            abort(500)
     except IndexError:
-        abort(404)
+        abort(403)
+    try:
+        transcode(song)
+        return send_file_partial(song.get('filepath'))
+    except Exception as e:
+        raise
+        print str(e)
+        abort(500)
+
 
 @app.route('/search/<term>/')
 def search(term):
@@ -205,7 +206,6 @@ def playlist_get(name=None):
             if f.endswith('.json'):
                 playlists.append(f[:-5])
         return json.dumps(playlists)
-
 
 @app.route('/rescan')
 def rescan():
