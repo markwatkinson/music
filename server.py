@@ -113,7 +113,7 @@ def play(artist, album, song):
         album = a[0].get('albums')[0]
         song = album.get('songs')[0]
     except IndexError:
-        abort(403)
+        abort(404)
     try:
         transcode(song)
         return send_file_partial(song.get('filepath'))
