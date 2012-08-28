@@ -177,6 +177,10 @@
                     s = songs[0]
                 }
             }
+
+            ko.utils.arrayForEach(self.songs(), function(item) {
+                item.playlistData.playing(false);
+            });
             
             if (s instanceof SongModel) {
                 s.playlistData.playing(true);
