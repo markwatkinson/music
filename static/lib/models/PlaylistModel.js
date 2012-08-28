@@ -159,16 +159,38 @@
             if (reset) {
                 self.resetPlayed();
             }
+
+            if (!s && !currentSong) {
+                // we haven't received a proper instruction to play anything
+                // if we can find a song that still has its 'playing' attribute
+                // set then we'll use that (it exists because it was just stopped
+                // and nothng replaced it, dubious behaviour but okay
+                var  songs = self.songs(), len = songs.length;
+                for (var i=0; i < len; i++) {
+                    if (songs[i].playlistData.playing()) {
+                        s = songs[i];
+                        break;
+                    }
+                }
+                // else take the first index
+                if (!s) {
+                    s = songs[0]
+                }
+            }
+            
             if (s instanceof SongModel) {
                 s.playlistData.playing(true);
                 if (currentSong)
                     currentSong.playlistData.playing(false);
                 self.currentSong(s);
                 s.playlistData.played(true);
+            } else {
+                return;
             }
             self.playing(true);
             self.paused(false);
             audioElement.play();
+            return true;
         }
         this.playIndex = function(index, reset) {
             var s = self.songs()[index];

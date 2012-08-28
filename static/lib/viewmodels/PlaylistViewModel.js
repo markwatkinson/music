@@ -32,6 +32,7 @@ window.PlaylistViewModel = function() {
             if (state === self.playStates.PLAYING) {
                 self.playlist.pause();
             } else {
+                
                 self.playlist.play();
             }
         },
@@ -54,7 +55,6 @@ window.PlaylistViewModel = function() {
                 });
             });
         }
-        console.log('drop received from', source);
     }
     
     this.selection = {
@@ -97,7 +97,6 @@ window.PlaylistViewModel = function() {
         // click handler
         click : function(event, index) {
             var sel = self.selection;
-            console.log(event);
             if (event.ctrlKey) {
                 sel.toggleIndex(index);
                 sel.lastCtrl = true;
